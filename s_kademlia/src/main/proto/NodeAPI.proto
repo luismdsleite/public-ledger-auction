@@ -1,0 +1,24 @@
+syntax = "proto3";
+package proto;
+option java_package = "generated";
+
+// Msg Handler with lamport clocks support.
+service nodeAPI{
+    rpc findNode(NodeInfo) returns (NodesClose);
+    rpc ping(Empty) returns (Empty);
+}
+
+// Named NodeInfo to not mistake with the class s_kademlia.node.Node.
+message NodeInfo{
+    string ip = 1;
+    int32 port = 2;
+    int64 publicKey = 3; // Hashing this will return the nodeID while at the same time providing a message authentication method.
+}
+
+message NodesClose{
+    repeated NodeInfo nodes = 1;
+}
+
+message Empty{
+
+}
