@@ -1,7 +1,6 @@
 package s_kademlia.node;
 
 import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
 
 /**

@@ -3,6 +3,8 @@ package s_kademlia.node;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.PrivateKey;
 
 import s_kademlia.utils.CryptoHash;
 
@@ -10,11 +12,11 @@ import s_kademlia.utils.CryptoHash;
  * Represents a Kademlia Node ID. Also stores the public and private key used
  * for the node ID.
  */
-public class KademliaID {
+public class KademliaID implements Comparable<KademliaID> {
     private final transient int ID_LENGTH = 256; // SHA-256
     private static final int zeroBits = 20; // How many bytes of the key need to be zero (Static Puzzle)
-    private byte[] pubKeyBytes; // Bytes of the public key
-    private byte[] prvKeyBytes; // Bytes of the private key
+    private PublicKey pubKey; // Public Key
+    private PrivateKey prvKey; // Private Key
     private BigInteger hash; // Hash of the Public Key, Used as node ID
 
     /**
@@ -22,13 +24,13 @@ public class KademliaID {
      * SHA-256 of the Public Key. Since the private key is given it is possible to
      * sign messages.
      * 
-     * @param pubKeyBytes Public Key
-     * @param prvKeyBytes Private Key
+     * @param pubKey Public Key
+     * @param prvKey Private Key
      * @throws NoSuchAlgorithmException
      */
     public KademliaID(KeyPair keyPair) throws NoSuchAlgorithmException {
-        pubKeyBytes = keyPair.getPublic().getEncoded().clone();
-        prvKeyBytes = keyPair.getPrivate().getEncoded().clone();
+        pubKey = keyPair.getPublic();
+        prvKey = keyPair.getPrivate();
         hash = CryptoHash.toSha256(this.getPubKeyBytes());
     }
 
@@ -36,18 +38,20 @@ public class KademliaID {
      * Construct the NodeID from a public key. NodeID will become the SHA-256 of the
      * Public Key. Cannot sign messages since the private key it not provided.
      * 
-     * @param pubKeyBytes Public Key
-     * @param prvKeyBytes Private Key
+     * @param pubKey Public Key
+     * @param prvKey Private Key
+     * @throws NoSuchAlgorithmException
      */
-    public KademliaID(byte[] pubKeyBytes) {
-        pubKeyBytes = pubKeyBytes.clone();
+    public KademliaID(PublicKey pubKey) throws NoSuchAlgorithmException {
+        this.pubKey = pubKey;
+        hash = CryptoHash.toSha256(this.getPubKeyBytes());
     }
 
     /**
      * @return Returns the public key used
      */
     public byte[] getPubKeyBytes() {
-        return this.pubKeyBytes;
+        return this.pubKey.getEncoded();
     }
 
     /**
@@ -59,6 +63,10 @@ public class KademliaID {
 
     public BigInteger hash() {
         return hash;
+    }
+
+    public byte[] hashBytes() {
+        return hash.toByteArray();
     }
 
     /**
@@ -84,17 +92,15 @@ public class KademliaID {
      *
      * @return The distance of this NodeId from the given NodeId
      */
-    public KademliaID xor(KademliaID nid) {
+    public byte[] xor(KademliaID nid) {
         byte[] result = new byte[ID_LENGTH];
-        byte[] nidBytes = nid.getPubKeyBytes();
-
+        byte[] nidBytes = nid.hashBytes();
+        byte[] keyBytes = this.hashBytes();
         for (int i = 0; i < ID_LENGTH; i++) {
-            result[i] = (byte) (this.pubKeyBytes[i] ^ nidBytes[i]);
+            result[i] = (byte) (keyBytes[i] ^ nidBytes[i]);
         }
 
-        KademliaID resNid = new KademliaID(result);
-
-        return resNid;
+        return result;
     }
 
     /**
@@ -102,10 +108,10 @@ public class KademliaID {
      *
      * @return Integer The number of leading 0's
      */
-    public int getFirstSetBitIndex() {
+    public static int getFirstSetBitIndex(byte[] hashBytes) {
         int prefixLength = 0;
 
-        for (byte b : this.pubKeyBytes) {
+        for (byte b : hashBytes) {
             if (b == 0) {
                 prefixLength += 8;
             } else {
@@ -143,11 +149,16 @@ public class KademliaID {
          * Get the index i of the first set bit of the xor returned NodeId
          * The distance between them is ID_LENGTH - i
          */
-        return ID_LENGTH - this.xor(to).getFirstSetBitIndex();
+        return ID_LENGTH - KademliaID.getFirstSetBitIndex(this.xor(to));
     }
 
     @Override
     public String toString() {
         return this.hash().toString(16);
+    }
+
+    @Override
+    public int compareTo(KademliaID o) {
+        return this.hash().compareTo(o.hash());
     }
 }
