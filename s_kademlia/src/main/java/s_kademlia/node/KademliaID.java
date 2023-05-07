@@ -13,7 +13,7 @@ import s_kademlia.utils.CryptoHash;
  * for the node ID.
  */
 public class KademliaID implements Comparable<KademliaID> {
-    private final transient int ID_LENGTH = 256; // SHA-256
+    public final transient static int ID_LENGTH = 256; // SHA-256
     private static final int zeroBits = 20; // How many bytes of the key need to be zero (Static Puzzle)
     private PublicKey pubKey; // Public Key
     private PrivateKey prvKey; // Private Key
