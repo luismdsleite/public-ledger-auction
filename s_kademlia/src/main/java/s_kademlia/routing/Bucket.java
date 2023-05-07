@@ -51,34 +51,56 @@ public class Bucket {
 
     }
 
-    public synchronized void insert(Contact c){
-        if(this.contacts.contains(c)){
+    
+    /**
+     * <p> Inserts a contact into the contacts list. 
+     * <p> If the Contact was already present then we put it on the front of the bucket.
+     * @param c Contact to add
+     */
+    public synchronized void insert(Contact c) {
+        if (this.contacts.contains(c)) {
             /**
-             * If the contact is already in the bucket, then update it and put it at the head of the list.
-             * TODO:
+             * If the contact is already in the bucket, then update it and put it at the
+             * head of the list.
              */
-            contacts.remove(c);
+            var tmp = this.removeFromContacts(c.getNode());
+            tmp.updateLastSeen();
+            this.contacts.add(tmp);
+
         }
+    }
+
+    public synchronized void insert(Node n) {
+        this.insert(new Contact(n));
     }
 
     /**
      * Removes a node from the bucket.
+     * This cannot be named remove since it enters in conflict
      * 
      * @param n Node to remove
      * @return True if the contact was removed, false if the node is not present in
      *         the bucket.
      */
-    public synchronized Contact remove(Node n) {
-        for (Contact c : contacts) {
+    public synchronized Contact removeFromContacts(Node n) {
+        Contact c = getFromContacts(n);
+        this.contacts.remove(c);
+        return c;
+    }
+
+    public synchronized Contact getFromContacts(Node n) {
+        for (Contact c : this.contacts) {
             if (c.getNode().equals(n)) {
-                contacts.remove(c);
                 return c;
             }
         }
-        throw new NoSuchElementException("Node is not present in the bucket.");
+
+        /* This contact does not exist */
+        throw new NoSuchElementException("The contact does not exist in the contacts list.");
+
     }
 
-    public boolean removeNode(Node node) {
+    public boolean remove(Node node) {
         Contact contact = new Contact(node);
         return contacts.remove(contact);
     }

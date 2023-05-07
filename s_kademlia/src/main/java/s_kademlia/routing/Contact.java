@@ -56,5 +56,4 @@ public class Contact implements Comparable<Contact> {
         // Most recent seen node is bigger.
         return this.getLastSeen() > o.getLastSeen() ? 1 : -1;
     }
-
 }
