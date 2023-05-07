@@ -34,7 +34,7 @@ public class Blockchain {
         for (int i = 1; i < blockchain.size(); i++) {
             currentBlock = blockchain.get(i);
             previousBlock = blockchain.get(i - 1);
-            if (!currentBlock.getHash().equals(currentBlock.calculateHash())) {
+            if (!currentBlock.getHash().equals(currentBlock.calculateHashData())) {
                 return false;
             }
             if (!previousBlock.getHash().equals(currentBlock.getPreviousHash())) {

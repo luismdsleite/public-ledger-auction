@@ -11,6 +11,15 @@ public class BlockchainGUI {
     private JFrame frame;
     private JPanel panel;
 
+    public BlockchainGUI() {
+        // Define the GUI components
+        frame = new JFrame("Blockchain Status");
+        frame.setLayout(new FlowLayout());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        panel = new JPanel();
+    }
+
     public JPanel getPanel() {
         return panel;
     }
@@ -40,15 +49,7 @@ public class BlockchainGUI {
         frame.add(scrollPane);
     }
 
-    public BlockchainGUI() {
-        // Define the GUI components
-        frame = new JFrame("Blockchain Status");
-        frame.setLayout(new FlowLayout());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        panel = new JPanel();
-        
-    }
+    
 
    
 }
