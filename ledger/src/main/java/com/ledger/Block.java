@@ -13,6 +13,14 @@ public class Block {
     private int nonce;
     private String hash;
     private String previousHash;
+    
+    public ArrayList<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public int getIndex() {
+        return index;
+    }
 
     public String getHash() {
         return hash;

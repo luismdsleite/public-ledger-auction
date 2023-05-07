@@ -6,6 +6,10 @@ public class Blockchain {
     private int difficulty;
     private ArrayList<Block> blockchain = new ArrayList<Block>();
 
+    public ArrayList<Block> getBlockchain() {
+        return blockchain;
+    }
+
     public Blockchain(int difficulty) {
         this.difficulty = difficulty;
         Block genesisBlock = new Block(0, "0", new ArrayList<Transaction>());
