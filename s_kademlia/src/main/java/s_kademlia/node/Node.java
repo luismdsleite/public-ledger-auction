@@ -17,7 +17,8 @@ import io.grpc.stub.StreamObserver;
 public class Node extends nodeAPIImplBase implements Comparable<Node> {
     private final KademliaID nodeID;
     private final String name;
-
+    private final int port;
+    
     public Node(KademliaID nodeID, String name, int port) {
         this.nodeID = nodeID;
         this.name = name; // Access Point
@@ -43,8 +44,6 @@ public class Node extends nodeAPIImplBase implements Comparable<Node> {
     public String getName() {
         return name;
     }
-
-    private final int port;
 
     public int getPort() {
         return port;
