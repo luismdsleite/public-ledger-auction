@@ -14,7 +14,7 @@ import io.grpc.stub.StreamObserver;
  * A Node in the S/Kademlia network - Contains basic node network information.
  */
 
-public class Node extends nodeAPIImplBase implements Comparable<Node> {
+public class Node implements Comparable<Node> {
     private final KademliaID nodeID;
     private final String name;
     private final int port;
@@ -56,23 +56,6 @@ public class Node extends nodeAPIImplBase implements Comparable<Node> {
     @Override
     public int compareTo(Node o) {
         return this.getNodeID().compareTo(o.getNodeID());
-    }
-
-    @Override
-    public void findNode(NodeInfo request, StreamObserver<NodesClose> responseObserver) {
-        // TODO Auto-generated method stub
-        super.findNode(request, responseObserver);
-    }
-
-    /**
-     * Simple ping message. No additional info is given.
-     */
-    @Override
-    public void ping(Empty request, StreamObserver<Empty> responseObserver) {
-        System.out.println("Received a ping");
-        responseObserver.onNext(Empty.newBuilder().build());
-        responseObserver.onCompleted();
-        // super.ping(request, responseObserver);
     }
 
 }
