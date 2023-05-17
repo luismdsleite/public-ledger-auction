@@ -2,8 +2,8 @@ package com.ledger.gui;
 
 import javax.swing.*;
 
-import com.ledger.Block;
-import com.ledger.Blockchain;
+import com.ledger.blockchain.Block;
+import com.ledger.blockchain.Blockchain;
 
 import java.awt.*;
 
@@ -32,7 +32,7 @@ public class BlockchainGUI {
         JPanel blockPanelContainer = new JPanel();
         blockPanelContainer.setLayout(new BoxLayout(blockPanelContainer, BoxLayout.Y_AXIS));
     
-        for (Block block : blockchain.getBlockchain()) {
+        for (Block block : blockchain.getblockchainBlocks()) {
             BlockPanel blockPanel = new BlockPanel(block);
             blockPanelContainer.add(blockPanel);
         }
