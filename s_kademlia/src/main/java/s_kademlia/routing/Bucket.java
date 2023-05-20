@@ -1,5 +1,7 @@
 package s_kademlia.routing;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
 
@@ -19,45 +21,13 @@ public class Bucket {
 
     /**
      * <p>
-     * Adds a Node to the bucket.
+     * Inserts a contact into the contacts list.
      * <p>
-     * If the node was already in the bucket then we update its timestamp.
+     * If the Contact was already present then we put it on the front of the bucket.
      * 
-     * @param contact
-     * @return
-     */
-    public boolean addNode(Node node) {
-        Contact contact = new Contact(node);
-        // If we already had a contact then remove it, update its timestamp and add it
-        // again.
-        if (contacts.contains(contact)) {
-            contacts.remove(contact);
-            contact.updateLastSeen();
-            contacts.add(contact);
-            return true;
-        }
-        // If the bucket is not full simply add the contact to the contacts treeset.
-        if (contacts.size() < K_Nodes) {
-            contacts.add(contact);
-            return true;
-        }
-        // If the bucket is full, remove the oldest contact and insert the new one.
-        else {
-            Contact OldestSeen = contacts.pollFirst();
-            contacts.remove(OldestSeen);
-            contacts.add(contact);
-            return true;
-        }
-
-    }
-
-    
-    /**
-     * <p> Inserts a contact into the contacts list. 
-     * <p> If the Contact was already present then we put it on the front of the bucket.
      * @param c Contact to add
      */
-    public synchronized void insert(Contact c) {
+    public synchronized boolean insert(Contact c) {
         if (this.contacts.contains(c)) {
             /**
              * If the contact is already in the bucket, then update it and put it at the
@@ -65,13 +35,22 @@ public class Bucket {
              */
             var tmp = this.removeFromContacts(c.getNode());
             tmp.updateLastSeen();
-            this.contacts.add(tmp);
-
+            return this.contacts.add(tmp);
+        }
+        // If the bucket is not full simply add the contact to the contacts treeset.
+        else if (contacts.size() < K_Nodes) {
+            return contacts.add(c);
+        }
+        // If the bucket is full, remove the oldest contact and insert the new one.
+        else {
+            Contact OldestSeen = contacts.pollFirst();
+            contacts.remove(OldestSeen);
+            return contacts.add(c);
         }
     }
 
-    public synchronized void insert(Node n) {
-        this.insert(new Contact(n));
+    public synchronized boolean insert(Node n) {
+        return this.insert(new Contact(n));
     }
 
     /**
@@ -100,6 +79,27 @@ public class Bucket {
 
     }
 
+    /**
+     * Return all the contacts stored in the bucket.
+     * 
+     * @return
+     */
+    public synchronized List<Contact> getContacts() {
+        final ArrayList<Contact> ret = new ArrayList<>();
+
+        /* If we have no contacts, return the blank arraylist */
+        if (this.contacts.isEmpty()) {
+            return ret;
+        }
+
+        /* We have contacts, lets copy put them into the arraylist and return */
+        for (Contact c : this.contacts) {
+            ret.add(c);
+        }
+
+        return ret;
+    }
+
     public boolean remove(Node node) {
         Contact contact = new Contact(node);
         return contacts.remove(contact);
@@ -115,5 +115,10 @@ public class Bucket {
 
     public int size() {
         return contacts.size();
+    }
+
+    @Override
+    public String toString() {
+        return contacts.toString();
     }
 }

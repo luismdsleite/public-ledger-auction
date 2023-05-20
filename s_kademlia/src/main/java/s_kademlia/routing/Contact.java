@@ -47,13 +47,14 @@ public class Contact implements Comparable<Contact> {
     @Override
     public int compareTo(Contact o) {
         // If the both contact refer to the same node then they are the same.
-        if (this.getNode() == o.getNode())
+        if (this.getNode().equals(o.getNode()))
             return 0;
-        // If they tie in the last time they were seen, use their NodeID as a
-        // tie-breaker.
-        if (this.getLastSeen() == o.getLastSeen())
-            return this.compareTo(o);
         // Most recent seen node is bigger.
         return this.getLastSeen() > o.getLastSeen() ? 1 : -1;
+    }
+
+    @Override
+    public String toString() {
+        return n.toString();
     }
 }

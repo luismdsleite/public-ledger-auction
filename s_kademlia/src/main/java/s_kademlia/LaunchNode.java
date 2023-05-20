@@ -19,13 +19,11 @@ package s_kademlia;
 import io.grpc.Grpc;
 import io.grpc.InsecureServerCredentials;
 import io.grpc.Server;
-import s_kademlia.node.Node;
-
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * Server that manages startup/shutdown of a {@code Greeter} server.
@@ -35,12 +33,17 @@ public class LaunchNode {
 
   private Server server;
 
-  private void start(String host, int port) throws NoSuchAlgorithmException, IOException {
+  private void start(KademliaNode knode)
+      throws NoSuchAlgorithmException, IOException {
+    
+    int port = knode.getNode().getPort();
+    String host = knode.getNode().getName();
     /* The port on which the server should run */
     server = Grpc.newServerBuilderForPort(port, InsecureServerCredentials.create())
-        .addService(new Node(host, port))
+        .addService(knode)
         .build()
         .start();
+    
     logger.info("Server started, listening on " + host + ":" + port);
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
@@ -74,6 +77,10 @@ public class LaunchNode {
     }
   }
 
+  private void setLoggerLevel(Level level) {
+    logger.setLevel(level);
+  }
+
   /**
    * Main launches the server from the command line.
    * 
@@ -81,7 +88,17 @@ public class LaunchNode {
    */
   public static void main(String[] args) throws IOException, InterruptedException, NoSuchAlgorithmException {
     final LaunchNode server = new LaunchNode();
-    server.start(args[0], Integer.valueOf(args[1]));
+    if (args.length == 2) {
+      KademliaNode knode = new KademliaNode(args[0], Integer.parseInt(args[1]));
+      server.start(knode);
+    } else if (args.length == 4) {
+      KademliaNode knode = new KademliaNode(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]));
+      server.start(knode);
+    } else {
+      System.out.println("Usage: java -jar <jarname> <name> <port> [<bootstrapName> <bootstrapPort>]");
+      System.exit(0);
+    }
+    server.setLoggerLevel(Level.FINEST);
     server.blockUntilShutdown();
   }
 }
