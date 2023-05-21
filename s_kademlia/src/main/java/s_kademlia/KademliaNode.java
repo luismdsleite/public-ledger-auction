@@ -308,52 +308,57 @@ public class KademliaNode extends nodeAPIImplBase {
     }
 
     /**
-     * Execute a STORE rpc call to a node.
+     * Execute a STORE rpc call to {@link KademliaUtils.K} closests nodes.
      */
-    private boolean runStore(Node node, KademliaID kadID, KadStorageValue value)
+    private boolean runStore(List<Node> nodesList, KademliaID kadID, KadStorageValue value)
             throws StatusRuntimeException {
-        var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
-                .usePlaintext()
-                .build();
-        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT,
-                TimeUnit.MILLISECONDS);
-        StoreRequest storeRequest = StoreRequest.newBuilder()
-                .setKey(ByteString.copyFrom(kadID.hashBytes()))
-                .setValue(ByteString.copyFrom(value.getValueBytes()))
-                .setTimestamp(value.getTimestamp())
-                .build();
+        var someNodeStored = false;
+        for (Node node : nodesList) {
+            var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
+                    .usePlaintext()
+                    .build();
+            var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT,
+                    TimeUnit.MILLISECONDS);
+            StoreRequest storeRequest = StoreRequest.newBuilder()
+                    .setKey(ByteString.copyFrom(kadID.hashBytes()))
+                    .setValue(ByteString.copyFrom(value.getValueBytes()))
+                    .setTimestamp(value.getTimestamp())
+                    .build();
 
-        StoreResponse response = stub.store(storeRequest);
-        channel.shutdown();
-        return response.getSuccess();
+            StoreResponse response = stub.store(storeRequest);
+            someNodeStored |= response.getSuccess();
+            channel.shutdown();
+        }
+        return someNodeStored;
     }
 
     /**
-     * Execute a GET rpc call to a node.
+     * Execute a GET rpc call to the nearest N Nodes.
      * 
      * @param node
      * @param Key
      * @return
      */
-    private KadStorageValue runGet(Node node, KademliaID Key) {
-        var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
-                .usePlaintext()
-                .build();
-        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT,
-                TimeUnit.MILLISECONDS);
+    private KadStorageValue runGet(List<Node> nodesList, KademliaID Key) {
+        for (Node node : nodesList) {
+            var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
+                    .usePlaintext()
+                    .build();
+            var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT,
+                    TimeUnit.MILLISECONDS);
 
-        FindRequest findRequest = FindRequest.newBuilder()
-                .setKey(ByteString.copyFrom(Key.hashBytes()))
-                .build();
+            FindRequest findRequest = FindRequest.newBuilder()
+                    .setKey(ByteString.copyFrom(Key.hashBytes()))
+                    .build();
 
-        FindResponse response = stub.findValue(findRequest);
-        if (response.getSuccess()) {
+            FindResponse response = stub.findValue(findRequest);
             channel.shutdown();
-            return new KadStorageValue(new BigInteger(1, response.getValue().toByteArray()), response.getTimestamp());
-        } else {
-            channel.shutdown();
-            return null;
+            if (response.getSuccess()) {
+                return new KadStorageValue(new BigInteger(1, response.getValue().toByteArray()),
+                        response.getTimestamp());
+            }
         }
+        return null;
     }
 
     // --------- Public API --------- //
@@ -374,12 +379,18 @@ public class KademliaNode extends nodeAPIImplBase {
     public boolean put(BigInteger key, KadStorageValue value) {
         // These searches never return null since we add the local node to the routing.
         var kadID = new KademliaID(key);
-        var closestNodeBefore = routingTable.findClosest(kadID, 1).get(0);
+        var closestNodeBefore = routingTable.findClosest(kadID, KademliaUtils.K).get(0);
         try {
-            Node closestNodeAfter = KademliaUtils.nodeProtoToNode(runFindNode(kadID, closestNodeBefore).getNodes(0));
+
+            var closestNodesProto = runFindNode(kadID, closestNodeBefore).getNodesList();
+            var closestNodes = new ArrayList<Node>();
+            for (NodeProto n : closestNodesProto) {
+                closestNodes.add(KademliaUtils.nodeProtoToNode(n));
+            }
+            Node closestNodeAfter = closestNodes.get(0);
             // If the closest node is still the same, then we can send him the value.
             if (closestNodeBefore.equals(closestNodeAfter)) {
-                return runStore(closestNodeBefore, kadID, value);
+                return runStore(closestNodes, kadID, value);
             } else {
                 return this.storageManager.put(key, value);
             }
@@ -409,14 +420,17 @@ public class KademliaNode extends nodeAPIImplBase {
      */
     public KadStorageValue get(BigInteger key, int priority_index) {
         var kadID = new KademliaID(key);
-        var closestNodes = routingTable.findClosest(kadID, KademliaUtils.K);
+        Node closestNodeBefore = routingTable.findClosest(kadID, KademliaUtils.K).get(priority_index);
         try {
-            Node closestNodeBefore = closestNodes.get(priority_index);
-            Node closestNodeAfter = KademliaUtils.nodeProtoToNode(runFindNode(kadID, closestNodeBefore).getNodes(0));
+            var closestNodesProto = runFindNode(kadID, closestNodeBefore).getNodesList();
+            var closestNodes = new ArrayList<Node>();
+            for (NodeProto n : closestNodesProto) {
+                closestNodes.add(KademliaUtils.nodeProtoToNode(n));
+            }
+            Node closestNodeAfter = closestNodes.get(0);
             // If the closest node is still the same, then we can get the value.
             if (closestNodeBefore.equals(closestNodeAfter)) {
-                var value = runGet(closestNodeBefore, kadID);
-                return value;
+                return runGet(closestNodes, kadID);
             }
             // Found a closer node
             else {
@@ -436,9 +450,9 @@ public class KademliaNode extends nodeAPIImplBase {
         }
         // The ALGO and hash problem will never happen, so the only way to get here is
         // if the request timeouts
-        routingTable.penaltyContact(closestNodes.get(priority_index));
-        return get(key, 0); // Try Again.
-    }   
+        routingTable.penaltyContact(closestNodeBefore);
+        return null;
+    }
 
     public boolean put(byte[] key, KadStorageValue value) {
         return this.put(new BigInteger(1, key), value);

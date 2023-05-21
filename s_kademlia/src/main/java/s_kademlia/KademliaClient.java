@@ -70,19 +70,20 @@ public class KademliaClient {
         public static void main(String[] args)
                         throws NumberFormatException, StatusRuntimeException, NoSuchAlgorithmException, UnsupportedEncodingException {
 
-                // Generate a random byte array
-                Random random = new Random(77);
-                byte[] key = new byte[32];
-                random.nextBytes(key);
+                // // Generate a random byte array
+                // Random random = new Random(17);
+                // byte[] key = new byte[32];
+                // random.nextBytes(key);
                 
-                // var entry = new KadStorageValue("Lightweight BABY!!!!!!!!".getBytes(), 12323);
+                // var entry = new KadStorageValue("Lightweight, LIGHTWEIGHT BABYYYYYY".getBytes(), 12323);
                 
                 // runPut(new Node(args[0], Integer.parseInt(args[1])), key, entry);
                 
-                System.out.println("---------------------------------");
-                var recEntry = runGet(new Node(args[0], Integer.parseInt(args[1])), key);
+                // System.out.println("---------------------------------");
+                
+                // var recEntry = runGet(new Node(args[0], Integer.parseInt(args[1])), key);
 
-                System.out.println(new String(recEntry.getValueBytes(), "UTF-8"));
+                // System.out.println(new String(recEntry.getValueBytes(), "UTF-8"));
 
                 // System.out.println("FINITO");
         }

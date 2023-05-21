@@ -70,6 +70,13 @@ public class Bucket {
         return c;
     }
 
+    /**
+     * Returns a contact from the bucket.
+     * 
+     * @param n
+     * @return
+     * @throws NoSuchElementException
+     */
     public synchronized Contact getFromContacts(Node n) {
         for (Contact c : this.contacts) {
             if (c.getNode().equals(n)) {
@@ -129,14 +136,18 @@ public class Bucket {
      * 
      */
     public synchronized void penaltyContact(Node n) {
-        Contact contact = this.getFromContacts(n);
-        this.contacts.remove(contact);
-        if (contact.getFailedTries() > KademliaUtils.MAX_RETRIES) {
-            this.removeFromContacts(n);
-        } else {
-            logger.info("Contact exceeded max retries, removing it ");
-            contact.setFailedTries(contact.getFailedTries() + 1);
-            this.insert(contact);
+        try {
+            Contact contact = this.getFromContacts(n);
+            this.contacts.remove(contact);
+            if (contact.getFailedTries() > KademliaUtils.MAX_RETRIES) {
+                this.removeFromContacts(n);
+            } else {
+                logger.info("Contact exceeded max retries, removing it ");
+                contact.setFailedTries(contact.getFailedTries() + 1);
+                this.insert(contact);
+            }
+        } catch (NoSuchElementException e) {
+            // TODO: handle exception
         }
 
     }
