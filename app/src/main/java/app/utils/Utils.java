@@ -88,7 +88,7 @@ public class Utils {
     }
 
     public static boolean checkBidEmptyGet(String [] data) {
-        if(data.length == 6) {
+        if(data.length == 8) {
             return false;
         }
         return true;
