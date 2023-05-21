@@ -89,9 +89,9 @@ public class LaunchNode {
    * @throws InterruptedException
    * @throws NoSuchAlgorithmException
    */
-  public static void launchBootStrapNode(String name, int Port) throws IOException, InterruptedException, NoSuchAlgorithmException {
+  public static void launchBootstrapNode(String name, int port) throws IOException, InterruptedException, NoSuchAlgorithmException {
     final LaunchNode server = new LaunchNode();
-    KademliaNode knode = new KademliaNode(name, Port);
+    KademliaNode knode = new KademliaNode(name, port);
     server.start(knode);
     // server.setLoggerLevel(Level.FINEST);
     server.blockUntilShutdown();
@@ -105,9 +105,9 @@ public class LaunchNode {
    * @throws InterruptedException
    * @throws NoSuchAlgorithmException
    */
-  public static void launchNode(String name, int Port) throws IOException, InterruptedException, NoSuchAlgorithmException {
+  public static void launchNode(String name, int port, String bootstrapName, int bootstrapPort) throws IOException, InterruptedException, NoSuchAlgorithmException {
     final LaunchNode server = new LaunchNode();
-    KademliaNode knode = new KademliaNode(name, Port);
+    KademliaNode knode = new KademliaNode(name, port);
     server.start(knode);
     // server.setLoggerLevel(Level.FINEST);
     server.blockUntilShutdown();
