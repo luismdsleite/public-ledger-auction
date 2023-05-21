@@ -140,7 +140,12 @@ public class KademliaID implements Comparable<KademliaID> {
         byte[] result = new byte[ID_LENGTH / 8];
         byte[] nidBytes = nid.hashBytes();
         byte[] keyBytes = this.hashBytes();
-        for (int i = 0; i < ID_LENGTH / 8; i++) {
+        if(nidBytes.length != keyBytes.length){
+            System.out.println(nidBytes.length + " " + keyBytes.length + " " + ID_LENGTH / 8);
+            System.err.println("Node ID length mismatch");
+        }
+        var len = Math.min(nidBytes.length, keyBytes.length);
+        for (int i = 0; i < len-1; i++) {
             result[i] = (byte) (keyBytes[i] ^ nidBytes[i]);
         }
 
@@ -166,7 +171,7 @@ public class KademliaID implements Comparable<KademliaID> {
 
     @Override
     public String toString() {
-        return this.hash().toString(2);
+        return this.hash().toString(16);
     }
 
     @Override

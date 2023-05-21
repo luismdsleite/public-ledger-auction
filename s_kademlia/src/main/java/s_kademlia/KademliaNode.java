@@ -283,7 +283,8 @@ public class KademliaNode extends nodeAPIImplBase {
         var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
                 .build();
-        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT,
+                TimeUnit.MILLISECONDS);
 
         FindNodeRequest findNodeRequest = FindNodeRequest.newBuilder()
                 .setNode(KademliaUtils.nodeToNodeProto(this.localNode))
@@ -314,13 +315,14 @@ public class KademliaNode extends nodeAPIImplBase {
         var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
                 .build();
-        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT,
+                TimeUnit.MILLISECONDS);
         StoreRequest storeRequest = StoreRequest.newBuilder()
                 .setKey(ByteString.copyFrom(kadID.hashBytes()))
                 .setValue(ByteString.copyFrom(value.getValueBytes()))
                 .setTimestamp(value.getTimestamp())
                 .build();
-        
+
         StoreResponse response = stub.store(storeRequest);
         channel.shutdown();
         return response.getSuccess();
@@ -337,7 +339,8 @@ public class KademliaNode extends nodeAPIImplBase {
         var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
                 .build();
-        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT,
+                TimeUnit.MILLISECONDS);
 
         FindRequest findRequest = FindRequest.newBuilder()
                 .setKey(ByteString.copyFrom(Key.hashBytes()))
@@ -405,19 +408,15 @@ public class KademliaNode extends nodeAPIImplBase {
      * @return
      */
     public KadStorageValue get(BigInteger key, int priority_index) {
-        // These searches never return null since we add the local node to the routing.
         var kadID = new KademliaID(key);
-        var closestNodeBefore = routingTable.findClosest(kadID, 1).get(priority_index);
+        var closestNodes = routingTable.findClosest(kadID, KademliaUtils.K);
         try {
+            Node closestNodeBefore = closestNodes.get(priority_index);
             Node closestNodeAfter = KademliaUtils.nodeProtoToNode(runFindNode(kadID, closestNodeBefore).getNodes(0));
             // If the closest node is still the same, then we can get the value.
             if (closestNodeBefore.equals(closestNodeAfter)) {
                 var value = runGet(closestNodeBefore, kadID);
-                if (value == null) { // Node did not have the key, try the next closest node.
-                    return get(key, priority_index + 1);
-                } else {
-                    return value;
-                }
+                return value;
             }
             // Found a closer node
             else {
@@ -432,12 +431,14 @@ public class KademliaNode extends nodeAPIImplBase {
         } catch (StatusRuntimeException e) {
             logger.info("The closest node is not responding, skipping");
             e.printStackTrace();
+        } catch (IndexOutOfBoundsException e) {
+            return null;
         }
         // The ALGO and hash problem will never happen, so the only way to get here is
         // if the request timeouts
-        routingTable.penaltyContact(closestNodeBefore);
+        routingTable.penaltyContact(closestNodes.get(priority_index));
         return get(key, 0); // Try Again.
-    }
+    }   
 
     public boolean put(byte[] key, KadStorageValue value) {
         return this.put(new BigInteger(1, key), value);
@@ -452,10 +453,16 @@ public class KademliaNode extends nodeAPIImplBase {
     public void get(GetRequest request, StreamObserver<GetResponse> responseObserver) {
         var kadID = new BigInteger(1, request.getKey().toByteArray());
         var value = this.get(kadID, 0);
-        responseObserver.onNext(GetResponse.newBuilder()
-                .setTimestamp(value.getTimestamp())
-                .setValue(ByteString.copyFrom(value.getValueBytes()))
-                .build());
+        if (value == null) {
+            responseObserver.onNext(GetResponse.newBuilder()
+                    .setSuccess(false)
+                    .build());
+        } else {
+            responseObserver.onNext(GetResponse.newBuilder()
+                    .setTimestamp(value.getTimestamp())
+                    .setValue(ByteString.copyFrom(value.getValueBytes()))
+                    .build());
+        }
         responseObserver.onCompleted();
     }
 

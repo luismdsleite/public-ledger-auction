@@ -25,7 +25,9 @@ public class RoutingTable {
     }
 
     /**
-     * Constructor used only for the Bootstrap Nodes. Buckets in this routing table dont have a size limit.
+     * Constructor used only for the Bootstrap Nodes. Buckets in this routing table
+     * dont have a size limit.
+     * 
      * @param bootstrapNode
      */
     public RoutingTable(KademliaNode bootstrapNode) {
@@ -67,6 +69,11 @@ public class RoutingTable {
         // If i use my own nodeID the index will return -1, this if handles that case.
         if (bIndex < 0)
             bIndex = 0;
+        else if (bIndex > KademliaID.ID_LENGTH-1) {
+
+            logger.warning("Bucket index " + bIndex + " out of bounds, returning last bucket" + nid);
+            bIndex = KademliaID.ID_LENGTH;
+        }
         return bIndex;
     }
 
@@ -96,7 +103,7 @@ public class RoutingTable {
         /* Now we have the sorted set, lets get the top numRequired */
         int count = 0;
         for (Node n : sortedSet) {
-            if(n.getNodeID().equals(target))
+            if (n.getNodeID().equals(target))
                 continue;
             closest.add(n);
             if (++count == numNodesRequired) {
@@ -128,7 +135,9 @@ public class RoutingTable {
 
     /**
      * Adds a penalty to a node. This is used when a node fails to respond to a RPC.
-     * After a node reaches {@value s_kademlia.utils.KademliaUtils#MAX_RETRIES} number of failed attempts it is removed from the routing table.
+     * After a node reaches {@value s_kademlia.utils.KademliaUtils#MAX_RETRIES}
+     * number of failed attempts it is removed from the routing table.
+     * 
      * @param n
      */
     public synchronized void penaltyContact(Node n) {

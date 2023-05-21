@@ -10,7 +10,7 @@ public class KademliaUtils {
     public static final int K = 20;
     public static final String CRYPTO_ALGO = "RSA";
     public static final String HASH_ALGO = "SHA-256";
-    public static final int RPC_CALL_TIMEOUT = 99999;
+    public static final int RPC_CALL_TIMEOUT = 10000;
     public static final int MAX_RETRIES = 3;
     public static final int STATIC_PUZZLE_ZEROS = 2;
     public static Node nodeProtoToNode(NodeProto n) throws NoSuchAlgorithmException, InvalidKeySpecException {

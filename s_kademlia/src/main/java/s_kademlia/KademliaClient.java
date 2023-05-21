@@ -4,6 +4,8 @@ import generated.nodeAPIGrpc;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import com.google.protobuf.ByteString;
@@ -65,18 +67,23 @@ public class KademliaClient {
                 return response.getSuccess();
         }
 
-        // public static void main(String[] args)
-        //                 throws NumberFormatException, StatusRuntimeException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        //         byte[] key = { (byte) 0b11101100_1 };
-        //         var entry = new KadStorageValue("Teste".getBytes(), 222);
-        //         System.out.println("Original" + new String(entry.getValueBytes(), "UTF-8"));
-        //         runPut(new Node(args[0], Integer.parseInt(args[1])), key, entry);
+        public static void main(String[] args)
+                        throws NumberFormatException, StatusRuntimeException, NoSuchAlgorithmException, UnsupportedEncodingException {
 
-        //         System.out.println("---------------------------------");
-        //         var recEntry = runGet(new Node(args[0], Integer.parseInt(args[1])), key);
+                // Generate a random byte array
+                Random random = new Random(77);
+                byte[] key = new byte[32];
+                random.nextBytes(key);
+                
+                // var entry = new KadStorageValue("Lightweight BABY!!!!!!!!".getBytes(), 12323);
+                
+                // runPut(new Node(args[0], Integer.parseInt(args[1])), key, entry);
+                
+                System.out.println("---------------------------------");
+                var recEntry = runGet(new Node(args[0], Integer.parseInt(args[1])), key);
 
-        //         System.out.println(new String(recEntry.getValueBytes(), "UTF-8"));
+                System.out.println(new String(recEntry.getValueBytes(), "UTF-8"));
 
-        //         System.out.println("FINITO");
-        // }
+                // System.out.println("FINITO");
+        }
 }

@@ -36,7 +36,7 @@ public class KadStorageValue {
     @Override
     public String toString() {
         return "KadStorageEntry{" +
-                "Value='" + value.toString(2) +
+                "Value='" + value.toString(16) +
                 ", timestamp=" + timestamp +
                 '}';
     }
