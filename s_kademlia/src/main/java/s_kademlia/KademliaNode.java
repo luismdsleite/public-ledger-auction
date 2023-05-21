@@ -250,7 +250,7 @@ public class KademliaNode extends nodeAPIImplBase {
     }
 
     /**
-     * Execute a FIND_NODE rpc call to a node and updat routing table.
+     * Execute a FIND_NODE rpc call to a node and update routing table.
      * 
      * @param kadID
      * @param node

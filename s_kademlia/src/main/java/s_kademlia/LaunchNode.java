@@ -33,7 +33,7 @@ public class LaunchNode {
 
   private Server server;
 
-  public void start(KademliaNode knode)
+  private void start(KademliaNode knode)
       throws NoSuchAlgorithmException, IOException {
     
     int port = knode.getNode().getPort();
@@ -61,7 +61,7 @@ public class LaunchNode {
     });
   }
 
-  public void stop() throws InterruptedException {
+  private void stop() throws InterruptedException {
     if (server != null) {
       server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
     }
@@ -71,7 +71,7 @@ public class LaunchNode {
    * Await termination on the main thread since the grpc library uses daemon
    * threads.
    */
-  public void blockUntilShutdown() throws InterruptedException {
+  private void blockUntilShutdown() throws InterruptedException {
     if (server != null) {
       server.awaitTermination();
     }
@@ -79,6 +79,38 @@ public class LaunchNode {
 
   private void setLoggerLevel(Level level) {
     logger.setLevel(level);
+  }
+
+  /**
+   * Launches a bootstrap node. Blocks until the server is terminated.
+   * @param name
+   * @param Port
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws NoSuchAlgorithmException
+   */
+  public static void launchBootStrapNode(String name, int Port) throws IOException, InterruptedException, NoSuchAlgorithmException {
+    final LaunchNode server = new LaunchNode();
+    KademliaNode knode = new KademliaNode(name, Port);
+    server.start(knode);
+    // server.setLoggerLevel(Level.FINEST);
+    server.blockUntilShutdown();
+  }
+
+  /**
+   * Launches a regular node. Blocks until the server is terminated.
+   * @param name
+   * @param Port
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws NoSuchAlgorithmException
+   */
+  public static void launchNode(String name, int Port) throws IOException, InterruptedException, NoSuchAlgorithmException {
+    final LaunchNode server = new LaunchNode();
+    KademliaNode knode = new KademliaNode(name, Port);
+    server.start(knode);
+    // server.setLoggerLevel(Level.FINEST);
+    server.blockUntilShutdown();
   }
 
   /**
@@ -99,6 +131,6 @@ public class LaunchNode {
       System.exit(0);
     }
     server.setLoggerLevel(Level.FINEST);
-    // server.blockUntilShutdown();
+    server.blockUntilShutdown();
   }
 }
