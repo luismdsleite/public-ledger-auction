@@ -38,6 +38,12 @@ public class KademliaID implements Comparable<KademliaID> {
         hash = CryptoHash.toSha256(this.getPubKeyBytes());
     }
 
+    public KademliaID(PublicKey pubKey, PrivateKey prvKey) throws NoSuchAlgorithmException {
+        this.pubKey = pubKey;
+        this.prvKey = prvKey;
+        hash = CryptoHash.toSha256(this.getPubKeyBytes());
+    }
+
     /**
      * Used only by keys, to find the server who store them.
      * 

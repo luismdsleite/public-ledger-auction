@@ -21,6 +21,8 @@ import io.grpc.InsecureServerCredentials;
 import io.grpc.Server;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,9 +107,9 @@ public class LaunchNode {
    * @throws InterruptedException
    * @throws NoSuchAlgorithmException
    */
-  public static void launchNode(String name, int port, String bootstrapName, int bootstrapPort) throws IOException, InterruptedException, NoSuchAlgorithmException {
+  public static void launchNode(String name, int port, String bootstrapName, int bootstrapPort, PublicKey pubKey, PrivateKey prvKey) throws IOException, InterruptedException, NoSuchAlgorithmException {
     final LaunchNode server = new LaunchNode();
-    KademliaNode knode = new KademliaNode(name, port, bootstrapName, bootstrapPort);
+    KademliaNode knode = new KademliaNode(name, port, bootstrapName, bootstrapPort, pubKey, prvKey);
     server.start(knode);
     // server.setLoggerLevel(Level.FINEST);
     server.blockUntilShutdown();

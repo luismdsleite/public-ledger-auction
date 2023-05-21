@@ -3,6 +3,8 @@ package s_kademlia.node;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
 import s_kademlia.utils.CryptoHash;
@@ -24,7 +26,6 @@ public class Node implements Comparable<Node> {
         this.port = port; // Access Point
     }
 
-
     public Node(byte[] pubKeyBytes, String name, int port) throws NoSuchAlgorithmException, InvalidKeySpecException {
         this.nodeID = new KademliaID(CryptoHash.bytesToPubKey(pubKeyBytes));
         this.name = name; // Access Point
@@ -32,18 +33,27 @@ public class Node implements Comparable<Node> {
     }
 
     /**
-     * Only used to create a local node! Will generate new a pair of keys used for public cryptography. 
+     * Only used to create a local node! Will generate new a pair of keys used for
+     * public cryptography.
+     * 
      * @throws NoSuchAlgorithmException
      */
     public Node(String name, int port) throws NoSuchAlgorithmException {
-
         // Generate a key pair
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KademliaUtils.CRYPTO_ALGO);
-        keyPairGenerator.initialize(2048);
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        KeyPair keyPair = CryptoHash.genKeyPair();
         keyPair.getPrivate();
         // Create a NodeID with the public and private key
         nodeID = new KademliaID(keyPair);
+        this.name = name;
+        this.port = port;
+    }
+
+    public Node(String name, int port, PublicKey pubKey, PrivateKey prvKey) {
+        try {
+            this.nodeID = new KademliaID(pubKey, prvKey);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
         this.name = name;
         this.port = port;
     }

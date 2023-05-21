@@ -57,6 +57,18 @@ public class KademliaNode extends nodeAPIImplBase {
     }
 
     /**
+     * Constructor used only for the Bootstrap Nodes. Does not initiate the bootstap
+     * process.
+     * 
+     * @param name
+     * @param port
+     * @throws NoSuchAlgorithmException
+     */
+    public KademliaNode(String name, int port, PublicKey pubKey, PrivateKey prvKey) throws NoSuchAlgorithmException {
+        this(new Node(name, port));
+    }
+
+    /**
      * Create a Node object and join a network via the Bootstrap Node
      * 
      * @param name          Access Point name of the node
@@ -68,6 +80,18 @@ public class KademliaNode extends nodeAPIImplBase {
     public KademliaNode(String name, int port, String bootstrapName, int bootstrapPort)
             throws NoSuchAlgorithmException {
         this(new Node(name, port));
+        Node bootstrapNode = new Node(bootstrapName, bootstrapPort);
+        this.bootstrap(bootstrapNode);
+    }
+
+    /**
+     * Create a Node object and join a network via the Bootstrap Node. Also sets the
+     * public and private key.
+     */
+    public KademliaNode(String name, int port, String bootstrapName, int bootstrapPort, PublicKey pubKey,
+            PrivateKey prvKey)
+            throws NoSuchAlgorithmException {
+        this(new Node(name, port, pubKey, prvKey));
         Node bootstrapNode = new Node(bootstrapName, bootstrapPort);
         this.bootstrap(bootstrapNode);
     }
@@ -412,12 +436,11 @@ public class KademliaNode extends nodeAPIImplBase {
         return get(key, 0); // Try Again.
     }
 
-
-    public boolean put(byte[] key, KadStorageValue value){
+    public boolean put(byte[] key, KadStorageValue value) {
         return this.put(new BigInteger(1, key), value);
     }
 
-    public KadStorageValue get(byte[] key){
+    public KadStorageValue get(byte[] key) {
         return this.get(new BigInteger(1, key), 0);
     }
 

@@ -2,6 +2,8 @@ package s_kademlia.utils;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -37,6 +39,13 @@ public class CryptoHash {
 
     // Generate the public key from the key spec
     return keyFactory.generatePublic(publicKeySpec);
+  }
+
+  public static KeyPair genKeyPair() throws NoSuchAlgorithmException {
+    // Generate a key pair
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KademliaUtils.CRYPTO_ALGO);
+    keyPairGenerator.initialize(2048);
+    return keyPairGenerator.generateKeyPair();
   }
 
 }
