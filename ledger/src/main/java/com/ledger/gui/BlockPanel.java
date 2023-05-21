@@ -11,8 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import com.ledger.Block;
-import com.ledger.Transaction;
+import com.ledger.blockchain.Block;
+import com.ledger.transaction.Transaction;
 
 public class BlockPanel extends JPanel {
 
