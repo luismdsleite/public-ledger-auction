@@ -230,4 +230,21 @@ public class KademliaNode extends nodeAPIImplBase {
         responseObserver.onCompleted();
     }
 
+    // --------- Public API --------- //
+    public boolean put(BigInteger key, BigInteger value) {
+        throw new UnsupportedOperationException("Function not yet implemented");
+    }
+    
+    public boolean put(byte[] key, byte[] value) {
+        throw new UnsupportedOperationException("Function not yet implemented");
+    }
+
+    public boolean get(BigInteger key, BigInteger value) {
+        throw new UnsupportedOperationException("Function not yet implemented");
+    }
+
+    public boolean get(byte[] key, byte[] value) {
+        throw new UnsupportedOperationException("Function not yet implemented");
+    }
+
 }
