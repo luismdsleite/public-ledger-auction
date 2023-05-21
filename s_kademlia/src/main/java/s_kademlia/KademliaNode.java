@@ -137,6 +137,9 @@ public class KademliaNode extends nodeAPIImplBase {
     public byte[] getPvtKeyBytes(){
         return this.getNode().getNodeID().getPvtKeyBytes();
     }
+    public byte[] getPubKeyBytes() {
+        return this.getNode().getNodeID().getPubKeyBytes();
+    }
 
     // Returning the K nodes closest to the requested node.
     @Override
