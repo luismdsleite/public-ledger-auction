@@ -71,13 +71,13 @@ public class Main {
         System.out.println(blockchain);
 
         // Generate wallet address
-        String generatedAddress = WalletAddressGenerator.generateWalletAddress();
-        System.out.println("Generated Address: " + generatedAddress);
+        // String generatedAddress = WalletAddressGenerator.generateWalletAddress();
+        // System.out.println("Generated Address: " + generatedAddress);
         
         // Verify if wallet address is valid
-        String testAddress = "0x4A1DDCC299EEE65E089B54AF6A21BD59C4BCA52B";
-        boolean isValid = WalletAddressGenerator.verifyAddressFormat(testAddress);
-        System.out.println("Is Valid Address: " + isValid);
+        // String testAddress = "0x4A1DDCC299EEE65E089B54AF6A21BD59C4BCA52B";
+        // boolean isValid = WalletAddressGenerator.verifyAddressFormat(testAddress);
+        // System.out.println("Is Valid Address: " + isValid);
 
         // Generate keys
         RSAKeyGenerator keyGenerator = new RSAKeyGenerator();
@@ -87,10 +87,11 @@ public class Main {
         String privateKey = keyGenerator.getPrivateKey();
 
         // Create transaction
-        Transaction test = new Transaction("absc", "dfawd", 0, 0);
+        Transaction test = new Transaction("absc", "dfawd", publicKey, 0, 0);
 
         // Sign transaction
         test.setSignature(keyGenerator.signString(test.getHash(), privateKey));
+
         // Verify transaction
         System.out.println(keyGenerator.verifyString(test.getHash(), test.getSignature(), publicKey));
     }
