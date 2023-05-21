@@ -107,7 +107,7 @@ public class LaunchNode {
    */
   public static void launchNode(String name, int port, String bootstrapName, int bootstrapPort) throws IOException, InterruptedException, NoSuchAlgorithmException {
     final LaunchNode server = new LaunchNode();
-    KademliaNode knode = new KademliaNode(name, port);
+    KademliaNode knode = new KademliaNode(name, port, bootstrapName, bootstrapPort);
     server.start(knode);
     // server.setLoggerLevel(Level.FINEST);
     server.blockUntilShutdown();
