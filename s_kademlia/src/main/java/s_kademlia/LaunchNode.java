@@ -33,7 +33,7 @@ public class LaunchNode {
 
   private Server server;
 
-  private void start(KademliaNode knode)
+  public void start(KademliaNode knode)
       throws NoSuchAlgorithmException, IOException {
     
     int port = knode.getNode().getPort();
@@ -61,7 +61,7 @@ public class LaunchNode {
     });
   }
 
-  private void stop() throws InterruptedException {
+  public void stop() throws InterruptedException {
     if (server != null) {
       server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
     }
@@ -71,7 +71,7 @@ public class LaunchNode {
    * Await termination on the main thread since the grpc library uses daemon
    * threads.
    */
-  private void blockUntilShutdown() throws InterruptedException {
+  public void blockUntilShutdown() throws InterruptedException {
     if (server != null) {
       server.awaitTermination();
     }
@@ -99,6 +99,6 @@ public class LaunchNode {
       System.exit(0);
     }
     server.setLoggerLevel(Level.FINEST);
-    server.blockUntilShutdown();
+    // server.blockUntilShutdown();
   }
 }
