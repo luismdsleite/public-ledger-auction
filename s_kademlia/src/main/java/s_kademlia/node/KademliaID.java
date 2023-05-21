@@ -10,6 +10,7 @@ import com.google.protobuf.ByteString;
 import java.security.PrivateKey;
 
 import s_kademlia.utils.CryptoHash;
+import s_kademlia.utils.KademliaUtils;
 
 /**
  * Represents a Kademlia Node ID. Also stores the public and private key used
@@ -146,38 +147,6 @@ public class KademliaID implements Comparable<KademliaID> {
         return result;
     }
 
-    /**
-     * Counts the number of leading 0's in this NodeId
-     *
-     * @return Integer The number of leading 0's
-     */
-    public static int getFirstSetBitIndex(byte[] hashBytes) {
-        int prefixLength = 0;
-
-        for (byte b : hashBytes) {
-            if (b == 0) {
-                prefixLength += 8;
-            } else {
-                /* If the byte is not 0, we need to count how many MSBs are 0 */
-                int count = 0;
-                for (int i = 7; i >= 0; i--) {
-                    boolean a = (b & (1 << i)) == 0;
-                    if (a) {
-                        count++;
-                    } else {
-                        break; // Reset the count if we encounter a non-zero number
-                    }
-                }
-
-                /* Add the count of MSB 0s to the prefix length */
-                prefixLength += count;
-
-                /* Break here since we've now covered the MSB 0s */
-                break;
-            }
-        }
-        return prefixLength;
-    }
 
     /**
      * Gets the distance from this NodeId to another NodeId
@@ -192,12 +161,12 @@ public class KademliaID implements Comparable<KademliaID> {
          * Get the index i of the first set bit of the xor returned NodeId
          * The distance between them is ID_LENGTH - i
          */
-        return ID_LENGTH - KademliaID.getFirstSetBitIndex(this.xor(to));
+        return ID_LENGTH - KademliaUtils.getFirstSetBitIndex(this.xor(to));
     }
 
     @Override
     public String toString() {
-        return this.hash().toString(16);
+        return this.hash().toString(2);
     }
 
     @Override

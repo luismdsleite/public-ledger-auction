@@ -77,7 +77,6 @@ public class RoutingTable {
      */
     public synchronized final void insert(Node n) {
         this.buckets[this.getBucketIndex(n.getNodeID())].insert(n);
-        // System.out.println(this.buckets[0]);
     }
 
     /**

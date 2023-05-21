@@ -23,8 +23,7 @@ public class CryptoHash {
     // https://stackoverflow.com/questions/3103652/hash-string-via-sha-256-in-java
     MessageDigest md = MessageDigest.getInstance(KademliaUtils.HASH_ALGO);
 
-    md.update(bytes);
-    byte[] digest = md.digest();
+    byte[] digest = md.digest(bytes);
 
     return new BigInteger(1, digest);
   }
@@ -42,10 +41,20 @@ public class CryptoHash {
   }
 
   public static KeyPair genKeyPair() throws NoSuchAlgorithmException {
-    // Generate a key pair
     KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KademliaUtils.CRYPTO_ALGO);
     keyPairGenerator.initialize(2048);
-    return keyPairGenerator.generateKeyPair();
+
+    while (true) {
+      // Generate a key pair
+      KeyPair kp = keyPairGenerator.generateKeyPair();
+      var precedingZeros = KademliaUtils.getFirstSetBitIndex(toSha256(kp.getPublic().getEncoded()).toByteArray());
+      if (precedingZeros >= KademliaUtils.STATIC_PUZZLE_ZEROS) {
+        return kp;
+      } else{
+        System.out.println("Key pair generated with " + precedingZeros + " preceding zeros. Trying again.");
+      }
+    }
+
   }
 
 }

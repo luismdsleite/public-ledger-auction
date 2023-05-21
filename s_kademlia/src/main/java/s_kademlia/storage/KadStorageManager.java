@@ -21,6 +21,7 @@ public class KadStorageManager {
      * @return
      */
     public synchronized boolean put(BigInteger key, KadStorageValue value) {
+        logger.info("OH new entry " + key.toString(16) + " with " + new String(value.getValue().toByteArray()));
 
         // If the key is already present, check the timestamp and update only if newer.
         if (storage.containsKey(key)) {
@@ -35,7 +36,7 @@ public class KadStorageManager {
         }
         // If the key was not previously present just add it.
         storage.put(key, value);
-        logger.info("Inserted new entry " + key.toString(16) + " with " + value);
+        logger.info("INSERTED new entry " + key.toString(16) + " with " + new String(value.getValue().toByteArray()));
         return true;
     }
 

@@ -109,8 +109,9 @@ public class KademliaNode extends nodeAPIImplBase {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(bootstrapNode.getName(), bootstrapNode.getPort())
                 .usePlaintext()
                 .build();
-        logger.info("Created Channel with Bootstrap Node " + channel + " to " + bootstrapNode.getName() + ":"
-                + bootstrapNode.getPort());
+        // logger.info("Created Channel with Bootstrap Node " + channel + " to " +
+        // bootstrapNode + ":"
+        // + bootstrapNode.getPort());
         var stub = nodeAPIGrpc.newBlockingStub(channel);
         NodeProto nodeProto = KademliaUtils.nodeToNodeProto(this.localNode);
 
@@ -218,7 +219,6 @@ public class KademliaNode extends nodeAPIImplBase {
      */
     @Override
     public void ping(NodeProto request, StreamObserver<NodeProto> responseObserver) {
-        logger.info("Received Ping Request from:" + request);
         responseObserver.onNext(KademliaUtils.nodeToNodeProto(localNode));
         responseObserver.onCompleted();
     }
@@ -228,14 +228,11 @@ public class KademliaNode extends nodeAPIImplBase {
      */
     @Override
     public void store(StoreRequest request, StreamObserver<StoreResponse> responseObserver) {
-        logger.info("Received Store Request from:" + request);
-        StoreRequest storeRequest = StoreRequest.newBuilder().build();
         // Retrieve timestamp and value from the request.
         var key = new BigInteger(1, request.getKey().toByteArray());
         var timestamp = request.getTimestamp();
-        var value = storeRequest.getValue().toByteArray();
+        var value = request.getValue().toByteArray();
         var kadValue = new KadStorageValue(new BigInteger(1, value), timestamp);
-
         boolean result = storageManager.put(key, kadValue);
         // Return the response.
         StoreResponse storeResponse = StoreResponse.newBuilder()
@@ -315,7 +312,6 @@ public class KademliaNode extends nodeAPIImplBase {
         var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
                 .build()).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
-
         StoreRequest storeRequest = StoreRequest.newBuilder()
                 .setKey(ByteString.copyFrom(kadID.hashBytes()))
                 .setValue(ByteString.copyFrom(value.getValueBytes()))
@@ -375,7 +371,7 @@ public class KademliaNode extends nodeAPIImplBase {
             if (closestNodeBefore.equals(closestNodeAfter)) {
                 return runStore(closestNodeBefore, kadID, value);
             } else {
-                return put(key, value);
+                return this.storageManager.put(key, value);
             }
         } catch (NoSuchAlgorithmException e) {
             logger.severe("Error: Could not find algorithm" + KademliaUtils.CRYPTO_ALGO);
@@ -458,6 +454,7 @@ public class KademliaNode extends nodeAPIImplBase {
 
     @Override
     public void put(PutRequest request, StreamObserver<PutResponse> responseObserver) {
+        var valString = request.getValue();
         var kadID = new BigInteger(1, request.getKey().toByteArray());
         var value = new BigInteger(1, request.getValue().toByteArray());
         var timestamp = request.getTimestamp();
