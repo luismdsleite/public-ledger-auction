@@ -6,6 +6,7 @@ option java_package = "generated";
 service nodeAPI{
     rpc findNode(NodeProto) returns (NodesClose);
     rpc ping(NodeProto) returns (NodeProto);
+    rpc store(StoreRequest) returns (StoreResponse);
 }
 
 // Named NodeProto to not mistake with the class s_kademlia.node.Node.
@@ -19,6 +20,13 @@ message NodesClose{
     repeated NodeProto nodes = 1;
 }
 
-message Empty{
-    
+message StoreRequest{
+    bytes value = 1;
+    int64 timestamp = 2;
+}
+
+message StoreResponse{
+    bytes key = 1;
+    int64 timestamp = 2;
+    bool success = 3;
 }

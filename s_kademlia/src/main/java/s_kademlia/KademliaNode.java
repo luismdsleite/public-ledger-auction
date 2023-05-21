@@ -1,11 +1,14 @@
 package s_kademlia;
 
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import com.google.protobuf.ByteString;
 
 import generated.nodeAPIGrpc;
 import generated.NodeAPI.*;
@@ -15,6 +18,9 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import s_kademlia.node.Node;
 import s_kademlia.routing.RoutingTable;
+import s_kademlia.storage.KadStorageManager;
+import s_kademlia.storage.KadStorageValue;
+import s_kademlia.utils.CryptoHash;
 import s_kademlia.utils.KademliaUtils;
 
 /**
@@ -23,11 +29,13 @@ import s_kademlia.utils.KademliaUtils;
 public class KademliaNode extends nodeAPIImplBase {
     private final transient Node localNode;
     private final transient RoutingTable routingTable;
+    private final transient KadStorageManager storageManager;
     Logger logger = Logger.getLogger(KademliaNode.class.getName());
 
     public KademliaNode(Node localNode) {
         this.localNode = localNode;
         routingTable = new RoutingTable(localNode);
+        storageManager = new KadStorageManager();
     }
 
     /**
@@ -72,10 +80,11 @@ public class KademliaNode extends nodeAPIImplBase {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(bootstrapNode.getName(), bootstrapNode.getPort())
                 .usePlaintext()
                 .build();
-        logger.info("Created Channel with Bootstrap Node " + channel + " to " + bootstrapNode.getName() + ":" + bootstrapNode.getPort());
+        logger.info("Created Channel with Bootstrap Node " + channel + " to " + bootstrapNode.getName() + ":"
+                + bootstrapNode.getPort());
         var stub = nodeAPIGrpc.newBlockingStub(channel);
         NodeProto nodeProto = KademliaUtils.nodeToNodeProto(this.localNode);
-        
+
         NodesClose response = stub.findNode(nodeProto);
         List<Node> closestToAsk = new LinkedList<>();
         for (NodeProto neighProto : response.getNodesList()) {
@@ -90,7 +99,7 @@ public class KademliaNode extends nodeAPIImplBase {
                 logger.severe("Error: Could not find hash" + KademliaUtils.HASH_ALGO);
                 e.printStackTrace();
             }
-            
+
         }
 
         logger.info("Received bootstrap findNode response, contacting closest nodes");
@@ -166,6 +175,34 @@ public class KademliaNode extends nodeAPIImplBase {
 
     public Node getNode() {
         return localNode;
+    }
+
+    /**
+     * Store a value in the network. Does not check if the key really belongs to it.
+     */
+    @Override
+    public void store(StoreRequest request, StreamObserver<StoreResponse> responseObserver) {
+        logger.info("Received Store Request from:" + request);
+        StoreRequest storeRequest = StoreRequest.newBuilder().build();
+        var timestamp = request.getTimestamp();
+        var value = storeRequest.getValue().toByteArray();
+        var kadValue = new KadStorageValue(new BigInteger(1, value), timestamp);
+
+        try {
+            var key = CryptoHash.toSha256(value);
+            boolean result = storageManager.put(key, kadValue);
+            StoreResponse storeResponse = StoreResponse.newBuilder()
+                    .setTimestamp(timestamp)
+                    .setKey(ByteString.copyFrom(key.toByteArray()))
+                    .setSuccess(result)
+                    .build();
+            responseObserver.onNext(storeResponse);
+        } catch (NoSuchAlgorithmException e) {
+            logger.severe("Error: Could not find algorithm" + KademliaUtils.CRYPTO_ALGO);
+            e.printStackTrace();
+        }
+
+        responseObserver.onCompleted();
     }
 
 }
