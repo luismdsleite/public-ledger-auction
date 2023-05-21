@@ -12,7 +12,6 @@ public class Transaction {
     private String hash;
     private long timestamp;
     private String signature;
-    private float fee;
 
     public Transaction(String sender, String recipient, float amount, float fee) {
         this.sender = sender;
@@ -20,7 +19,6 @@ public class Transaction {
         this.amount = amount;
         this.hash = calculateHashData();
         this.timestamp = new Date().getTime();
-        this.fee = fee;
     }
 
     public String getSender() {
@@ -51,15 +49,10 @@ public class Transaction {
         this.signature = signature;
     }
 
-    public float getFee() {
-        return fee;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("     Timestamp: ").append(timestamp).append("\n");
-        sb.append("     Fee: ").append(fee).append("\n");
         sb.append("     Sender: ").append(sender).append("\n");
         sb.append("     Recipient: ").append(recipient).append("\n");
         sb.append("     Amount: ").append(amount).append("\n");

@@ -1,6 +1,7 @@
 package com.ledger.validation;
 
 import com.ledger.blockchain.Block;
+import com.ledger.consensus.ProofOfWork;
 
 public class BlockValidator {
     /**
@@ -13,8 +14,8 @@ public class BlockValidator {
     public static boolean isValidProofPoW(Block block, int difficulty) {
         // String containing number of 0's 
         String target = new String(new char[difficulty]).replace('\0', '0');
-        // Calculates hash using nonce
-        block.setHash(block.calculateHashData());
+        // Calculates hash using nonce and sets to the block, even if its not valid
+        block.setHash(ProofOfWork.calculateHashPoW(block));
         // Gets calculated hash
         String blockHash = block.getHash();
         return blockHash.substring(0, difficulty).equals(target);

@@ -3,7 +3,7 @@ package com.ledger.blockchain;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ledger.transaction.Transaction;
+// import com.ledger.transaction.Transaction;
 
 public class Blockchain {
     private int difficulty;
