@@ -413,12 +413,12 @@ public class KademliaNode extends nodeAPIImplBase {
     }
 
 
-    public KadStorageValue put(byte[] key, KadStorageValue value){
+    public boolean put(byte[] key, KadStorageValue value){
         return this.put(new BigInteger(1, key), value);
     }
 
-    public boolean get(byte[] key){
-        this.get(new BigInteger(1, key), 0);
+    public KadStorageValue get(byte[] key){
+        return this.get(new BigInteger(1, key), 0);
     }
 
     // --------- RPC Client API --------- //
