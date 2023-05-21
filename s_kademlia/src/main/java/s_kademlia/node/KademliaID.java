@@ -4,6 +4,9 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+
+import com.google.protobuf.ByteString;
+
 import java.security.PrivateKey;
 
 import s_kademlia.utils.CryptoHash;
@@ -69,6 +72,14 @@ public class KademliaID implements Comparable<KademliaID> {
         return hash.toByteArray();
     }
 
+    public ByteString hashByteStr() {
+        return ByteString.copyFrom(this.hashBytes());
+    }
+
+    public ByteString getPubKeyByteStr() {
+        return ByteString.copyFrom(this.getPubKeyBytes());
+    }
+
     /**
      * Compares a NodeId to this NodeId
      *
@@ -93,10 +104,10 @@ public class KademliaID implements Comparable<KademliaID> {
      * @return The distance of this NodeId from the given NodeId
      */
     public byte[] xor(KademliaID nid) {
-        byte[] result = new byte[ID_LENGTH];
+        byte[] result = new byte[ID_LENGTH / 8];
         byte[] nidBytes = nid.hashBytes();
         byte[] keyBytes = this.hashBytes();
-        for (int i = 0; i < ID_LENGTH; i++) {
+        for (int i = 0; i < ID_LENGTH / 8; i++) {
             result[i] = (byte) (keyBytes[i] ^ nidBytes[i]);
         }
 

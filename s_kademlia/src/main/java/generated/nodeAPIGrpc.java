@@ -18,27 +18,27 @@ public final class nodeAPIGrpc {
   public static final String SERVICE_NAME = "proto.nodeAPI";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.NodeInfo,
+  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.NodeProto,
       generated.NodeAPI.NodesClose> getFindNodeMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "findNode",
-      requestType = generated.NodeAPI.NodeInfo.class,
+      requestType = generated.NodeAPI.NodeProto.class,
       responseType = generated.NodeAPI.NodesClose.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<generated.NodeAPI.NodeInfo,
+  public static io.grpc.MethodDescriptor<generated.NodeAPI.NodeProto,
       generated.NodeAPI.NodesClose> getFindNodeMethod() {
-    io.grpc.MethodDescriptor<generated.NodeAPI.NodeInfo, generated.NodeAPI.NodesClose> getFindNodeMethod;
+    io.grpc.MethodDescriptor<generated.NodeAPI.NodeProto, generated.NodeAPI.NodesClose> getFindNodeMethod;
     if ((getFindNodeMethod = nodeAPIGrpc.getFindNodeMethod) == null) {
       synchronized (nodeAPIGrpc.class) {
         if ((getFindNodeMethod = nodeAPIGrpc.getFindNodeMethod) == null) {
           nodeAPIGrpc.getFindNodeMethod = getFindNodeMethod =
-              io.grpc.MethodDescriptor.<generated.NodeAPI.NodeInfo, generated.NodeAPI.NodesClose>newBuilder()
+              io.grpc.MethodDescriptor.<generated.NodeAPI.NodeProto, generated.NodeAPI.NodesClose>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "findNode"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.NodeAPI.NodeInfo.getDefaultInstance()))
+                  generated.NodeAPI.NodeProto.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   generated.NodeAPI.NodesClose.getDefaultInstance()))
               .setSchemaDescriptor(new nodeAPIMethodDescriptorSupplier("findNode"))
@@ -49,35 +49,66 @@ public final class nodeAPIGrpc {
     return getFindNodeMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.Empty,
-      generated.NodeAPI.Empty> getPingMethod;
+  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.NodeProto,
+      generated.NodeAPI.NodeProto> getPingMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "ping",
-      requestType = generated.NodeAPI.Empty.class,
-      responseType = generated.NodeAPI.Empty.class,
+      requestType = generated.NodeAPI.NodeProto.class,
+      responseType = generated.NodeAPI.NodeProto.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<generated.NodeAPI.Empty,
-      generated.NodeAPI.Empty> getPingMethod() {
-    io.grpc.MethodDescriptor<generated.NodeAPI.Empty, generated.NodeAPI.Empty> getPingMethod;
+  public static io.grpc.MethodDescriptor<generated.NodeAPI.NodeProto,
+      generated.NodeAPI.NodeProto> getPingMethod() {
+    io.grpc.MethodDescriptor<generated.NodeAPI.NodeProto, generated.NodeAPI.NodeProto> getPingMethod;
     if ((getPingMethod = nodeAPIGrpc.getPingMethod) == null) {
       synchronized (nodeAPIGrpc.class) {
         if ((getPingMethod = nodeAPIGrpc.getPingMethod) == null) {
           nodeAPIGrpc.getPingMethod = getPingMethod =
-              io.grpc.MethodDescriptor.<generated.NodeAPI.Empty, generated.NodeAPI.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<generated.NodeAPI.NodeProto, generated.NodeAPI.NodeProto>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "ping"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.NodeAPI.Empty.getDefaultInstance()))
+                  generated.NodeAPI.NodeProto.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.NodeAPI.Empty.getDefaultInstance()))
+                  generated.NodeAPI.NodeProto.getDefaultInstance()))
               .setSchemaDescriptor(new nodeAPIMethodDescriptorSupplier("ping"))
               .build();
         }
       }
     }
     return getPingMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.StoreRequest,
+      generated.NodeAPI.StoreResponse> getStoreMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "store",
+      requestType = generated.NodeAPI.StoreRequest.class,
+      responseType = generated.NodeAPI.StoreResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.NodeAPI.StoreRequest,
+      generated.NodeAPI.StoreResponse> getStoreMethod() {
+    io.grpc.MethodDescriptor<generated.NodeAPI.StoreRequest, generated.NodeAPI.StoreResponse> getStoreMethod;
+    if ((getStoreMethod = nodeAPIGrpc.getStoreMethod) == null) {
+      synchronized (nodeAPIGrpc.class) {
+        if ((getStoreMethod = nodeAPIGrpc.getStoreMethod) == null) {
+          nodeAPIGrpc.getStoreMethod = getStoreMethod =
+              io.grpc.MethodDescriptor.<generated.NodeAPI.StoreRequest, generated.NodeAPI.StoreResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "store"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.NodeAPI.StoreRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.NodeAPI.StoreResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new nodeAPIMethodDescriptorSupplier("store"))
+              .build();
+        }
+      }
+    }
+    return getStoreMethod;
   }
 
   /**
@@ -133,16 +164,23 @@ public final class nodeAPIGrpc {
 
     /**
      */
-    public void findNode(generated.NodeAPI.NodeInfo request,
+    public void findNode(generated.NodeAPI.NodeProto request,
         io.grpc.stub.StreamObserver<generated.NodeAPI.NodesClose> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getFindNodeMethod(), responseObserver);
     }
 
     /**
      */
-    public void ping(generated.NodeAPI.Empty request,
-        io.grpc.stub.StreamObserver<generated.NodeAPI.Empty> responseObserver) {
+    public void ping(generated.NodeAPI.NodeProto request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.NodeProto> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getPingMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void store(generated.NodeAPI.StoreRequest request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.StoreResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getStoreMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -151,16 +189,23 @@ public final class nodeAPIGrpc {
             getFindNodeMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                generated.NodeAPI.NodeInfo,
+                generated.NodeAPI.NodeProto,
                 generated.NodeAPI.NodesClose>(
                   this, METHODID_FIND_NODE)))
           .addMethod(
             getPingMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                generated.NodeAPI.Empty,
-                generated.NodeAPI.Empty>(
+                generated.NodeAPI.NodeProto,
+                generated.NodeAPI.NodeProto>(
                   this, METHODID_PING)))
+          .addMethod(
+            getStoreMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                generated.NodeAPI.StoreRequest,
+                generated.NodeAPI.StoreResponse>(
+                  this, METHODID_STORE)))
           .build();
     }
   }
@@ -184,7 +229,7 @@ public final class nodeAPIGrpc {
 
     /**
      */
-    public void findNode(generated.NodeAPI.NodeInfo request,
+    public void findNode(generated.NodeAPI.NodeProto request,
         io.grpc.stub.StreamObserver<generated.NodeAPI.NodesClose> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getFindNodeMethod(), getCallOptions()), request, responseObserver);
@@ -192,10 +237,18 @@ public final class nodeAPIGrpc {
 
     /**
      */
-    public void ping(generated.NodeAPI.Empty request,
-        io.grpc.stub.StreamObserver<generated.NodeAPI.Empty> responseObserver) {
+    public void ping(generated.NodeAPI.NodeProto request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.NodeProto> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getPingMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void store(generated.NodeAPI.StoreRequest request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.StoreResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getStoreMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -218,16 +271,23 @@ public final class nodeAPIGrpc {
 
     /**
      */
-    public generated.NodeAPI.NodesClose findNode(generated.NodeAPI.NodeInfo request) {
+    public generated.NodeAPI.NodesClose findNode(generated.NodeAPI.NodeProto request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getFindNodeMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public generated.NodeAPI.Empty ping(generated.NodeAPI.Empty request) {
+    public generated.NodeAPI.NodeProto ping(generated.NodeAPI.NodeProto request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getPingMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public generated.NodeAPI.StoreResponse store(generated.NodeAPI.StoreRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getStoreMethod(), getCallOptions(), request);
     }
   }
 
@@ -251,22 +311,31 @@ public final class nodeAPIGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<generated.NodeAPI.NodesClose> findNode(
-        generated.NodeAPI.NodeInfo request) {
+        generated.NodeAPI.NodeProto request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getFindNodeMethod(), getCallOptions()), request);
     }
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<generated.NodeAPI.Empty> ping(
-        generated.NodeAPI.Empty request) {
+    public com.google.common.util.concurrent.ListenableFuture<generated.NodeAPI.NodeProto> ping(
+        generated.NodeAPI.NodeProto request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getPingMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.NodeAPI.StoreResponse> store(
+        generated.NodeAPI.StoreRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getStoreMethod(), getCallOptions()), request);
     }
   }
 
   private static final int METHODID_FIND_NODE = 0;
   private static final int METHODID_PING = 1;
+  private static final int METHODID_STORE = 2;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -286,12 +355,16 @@ public final class nodeAPIGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_FIND_NODE:
-          serviceImpl.findNode((generated.NodeAPI.NodeInfo) request,
+          serviceImpl.findNode((generated.NodeAPI.NodeProto) request,
               (io.grpc.stub.StreamObserver<generated.NodeAPI.NodesClose>) responseObserver);
           break;
         case METHODID_PING:
-          serviceImpl.ping((generated.NodeAPI.Empty) request,
-              (io.grpc.stub.StreamObserver<generated.NodeAPI.Empty>) responseObserver);
+          serviceImpl.ping((generated.NodeAPI.NodeProto) request,
+              (io.grpc.stub.StreamObserver<generated.NodeAPI.NodeProto>) responseObserver);
+          break;
+        case METHODID_STORE:
+          serviceImpl.store((generated.NodeAPI.StoreRequest) request,
+              (io.grpc.stub.StreamObserver<generated.NodeAPI.StoreResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -356,6 +429,7 @@ public final class nodeAPIGrpc {
               .setSchemaDescriptor(new nodeAPIFileDescriptorSupplier())
               .addMethod(getFindNodeMethod())
               .addMethod(getPingMethod())
+              .addMethod(getStoreMethod())
               .build();
         }
       }
