@@ -1,8 +1,10 @@
 package app.utils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import app.auction.*;
@@ -32,6 +34,30 @@ public class Utils {
             Auction value = entry.getValue();
             showAuction(value);
         }
+    }
+
+    public static Bid highestBid(List<Bid> bids) {
+        Bid b = null;
+        int max = 0;
+        for(Bid bid : bids) {
+            if(bid.getAmount() > max) {
+                max = bid.getAmount();
+                b = bid;
+            }
+        }
+        return b;
+    }
+
+    public static String [] parseGetAuction(byte [] response) {
+        String data = new String(response);
+        return data.split("_");
+    }
+
+    public static boolean checkBidEmptyGet(String [] data) {
+        if(data.length == 6) {
+            return false;
+        }
+        return true;
     }
 
     public static void showAuction(Auction auction) { 

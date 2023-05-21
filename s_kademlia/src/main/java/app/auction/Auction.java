@@ -44,6 +44,9 @@ public class Auction {
 
     public byte[] getValue() {
         String key = this.getProduct() + "_" + this.getStartPrice() + "_" + Utils.formatDate(this.getStartDate()) + "_" + Utils.formatDate(this.getEndDate());
+        if(this.bestBid != null) {
+            key = key + "_" + bestBid.getBuyer() + "_" + bestBid.getAmount();
+        }
         return key.getBytes();
     }
 
@@ -97,6 +100,4 @@ public class Auction {
         Auction auction = new Auction(product, seller, startPrice, endDate);
         return auction;
     }
-
-
 }

@@ -2,20 +2,22 @@ package app.auction;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
-import com.ledger.security.RSAKeyGenerator;
+import org.bouncycastle.jcajce.provider.symmetric.util.PBE.Util;
+
+import com.ledger.security.RSASignatureUtils;
 import com.ledger.transaction.Transaction;
+
+import app.utils.Utils;
 
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 import s_kademlia.KademliaNode;
+import s_kademlia.storage.KadStorageValue;
 
 public class AuctionHandler extends Thread {
     private Auction auction;
@@ -28,11 +30,35 @@ public class AuctionHandler extends Thread {
         this.kademliaNode = kademliaNode;
         Auctions.addAuction(auction);
         this.bids = Auctions.getAuctionBids(auction.getKey());
+        //Create Auction and store it
 
-        kademliaNode.put(auction.getKeyHash(), auction.getValue());
+        long timestamp = System.currentTimeMillis() / 1000L;
+        KadStorageValue kadValue = new KadStorageValue(auction.getValue(), timestamp);
+        
+        kademliaNode.put(auction.getKeyHash(), kadValue);
+        
+        Utils.showAuction(auction);
 
         runningAuction = new Thread(this, "Auction Running: " + auction.getKey());
         runningAuction.start();
+    }
+
+    public Bid updateAuctionBest(String auctionKey) {
+        byte [] auctionBytes = kademliaNode.get(auction.getKeyHash()).getValueBytes();
+        
+        String bidArgs [] = Utils.parseGetAuction(auctionBytes);
+
+        // formato product_startPri_startDate_endDate_buyer_ammount
+
+        if(Utils.checkBidEmptyGet(bidArgs)) { //se não exists
+            return null;
+        }
+
+        Bid bid = new Bid(auction.getKey(), bidArgs[3], Integer.parseInt(bidArgs[4]));
+
+        auction.setBestBid(bid);
+        this.bids.add(bid);
+        return bid;
     }
 
     public String signString(String data, String privateKey) {
@@ -57,34 +83,35 @@ public class AuctionHandler extends Thread {
     @Override
     public void run() {
         System.out.println("Auction started");
-        while(this.bids.isEmpty()){
-            this.bids = Auctions.getAuctionBids(auction.getKey());
-            try {
-                sleep(4000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        int lastBid = this.bids.size() - 1;
-        Bid bestBid = this.bids.get(lastBid);
+        Bid lastBest = updateAuctionBest(auction.getKey()); //verifica se há alguma bid
+        Bid currentBest = lastBest;
+        
         while(new Date().before(this.auction.getEndDate())) {
-            lastBid = this.bids.size() - 1;
+            lastBest = updateAuctionBest(auction.getKey());
+            if (lastBest != currentBest){
+                currentBest = lastBest;
+                auction.setBestBid(currentBest);
+                // DAR STORE DA MELHOR BID QUANDO ELA MUDA??
+                long timestamp = System.currentTimeMillis() / 1000L;
+                KadStorageValue kadValue = new KadStorageValue(auction.getValue(), timestamp);
 
-            if (this.bids.get(lastBid) != bestBid){
-                bestBid = this.bids.get(lastBid);
+                kademliaNode.put(auction.getKeyHash(), kadValue);
+                
+                Utils.showAuction(auction);
             } else {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
+
         System.out.println("Auction closed");
         PrivateKey privateKey = this.kademliaNode.getPvtKey();
         PublicKey publicKey = this.kademliaNode.getPubKey();
 
-        Transaction transaction = new Transaction(bestBid.getBuyer(), bestBid.getSeller(), RSAKeyGenerator.getPublicKey(publicKey), (float) bestBid.getAmount(), bestBid.getFee());
-        RSAKeyGenerator.signString(transaction.getHash() , RSAKeyGenerator.getPrivateKey(privateKey));
+        Transaction transaction = new Transaction(currentBest.getBuyer(), currentBest.getSeller(), publicKey, (float) currentBest.getAmount(), currentBest.getFee());
+        RSASignatureUtils.signString(transaction.getHash() , privateKey);
     }
 }

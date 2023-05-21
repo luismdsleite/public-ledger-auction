@@ -7,7 +7,6 @@ import app.utils.Utils;
 import s_kademlia.utils.CryptoHash;
 
 public class Bid {
-    public String bidKey;
     public String auctionKey;
     public String buyer;
     public String seller;
@@ -38,7 +37,7 @@ public class Bid {
 
     public void setKey() throws NoSuchAlgorithmException {
         String key = this.getAmount() + Utils.formatDate(this.getBidDate()) + this.getBuyer();
-        this.bidKey = key;
+        this.auctionKey = key;
     }
 
     public float getFee() {
@@ -46,10 +45,6 @@ public class Bid {
     }
 
     public String getKey() {
-        return this.bidKey;
-    }
-
-    public String getAuctionKey() {
         return this.auctionKey;
     }
 

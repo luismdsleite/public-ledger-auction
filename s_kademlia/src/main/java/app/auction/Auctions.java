@@ -10,10 +10,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Map.Entry;
 
+import app.utils.Utils;
+
 public class Auctions {
     public static HashMap<String, Auctions> auctionS = new HashMap<>();
     Auction auction;
     List<Bid> bids = new ArrayList<>();
+    public static List<Auction> auctions = new ArrayList<>();
 
     public Auctions(Auction auction) {
         this.auction = auction;
@@ -21,6 +24,10 @@ public class Auctions {
 
     public Auction getAuction() {
         return auction;
+    }
+
+    public static List<Auction> getAuctionList() {
+        return auctions;
     }
 
     public List<Bid> getBids() {
@@ -31,7 +38,7 @@ public class Auctions {
         if(bids.isEmpty()){
             return null;
         }else{
-            return bids.get(bids.size() - 1);
+            return Utils.highestBid(bids);
         }
     }
 
@@ -126,15 +133,8 @@ public class Auctions {
     }
 
     public Bid updateBids(Bid bid){
-        Bid prevBid = null;
-        try{
-            prevBid = bids.get(bids.size() - 1);
-        } catch (NoSuchElementException ignored){
-
-        }
+        Bid prevBid = Utils.highestBid(bids); //melhor bid anterior
         bids.add(bid);
-        Collections.sort(bids, new BidComparator());
-
         return prevBid;
     }
     
@@ -156,12 +156,4 @@ public class Auctions {
         }
     }
 
-    public static class BidComparator implements Comparator<Bid> {
-        @Override
-        public int compare(Bid bid1, Bid bid2) {
-            // Define the sorting logic here
-            // For example, sort values based on their value in ascending order
-        return Integer.compare(bid1.getAmount(), bid2.getAmount());
-        }
-    }
 }
