@@ -20,7 +20,7 @@ public class Auction {
     public Date endDate;
     public Bid bestBid;
 
-    Auction(String product, String seller, int startPrice, Date endDate) {
+    public Auction(String product, String seller, int startPrice, Date endDate) {
         this.product = product;
         this.seller = seller;
         this.startPrice = startPrice;
@@ -33,15 +33,6 @@ public class Auction {
         return this.auctionKey;
     }
 
-    public byte[] getKeyHash() {
-        try {
-            return CryptoHash.toSha256(this.getKey().getBytes()).toByteArray();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public byte[] getValue() {
         String key = this.getProduct() + "_" + this.getStartPrice() + "_" + Utils.formatDate(this.getStartDate()) + "_" + Utils.formatDate(this.getEndDate());
         if(this.bestBid != null) {
@@ -51,8 +42,11 @@ public class Auction {
     }
 
     public void setKey() throws NoSuchAlgorithmException {
-        String key = this.getProduct() + this.getStartPrice() + Utils.formatDate(this.getStartDate()) + Utils.formatDate(this.getEndDate());
-        this.auctionKey = key;
+        String input = this.getSeller() + this.getProduct() + this.getStartPrice();
+        byte[] hashBytes = CryptoHash.toSha256(input.getBytes()).toByteArray();
+
+        String hash = Utils.byteToString(hashBytes);
+        this.auctionKey = hash;
     }
 
     public String getProduct() {
@@ -84,6 +78,10 @@ public class Auction {
     }
 
     public boolean isActive() {
+        if(new Date().after(this.endDate)) {
+            setClosed();
+            return false;
+        }
         return this.state;
     }
 

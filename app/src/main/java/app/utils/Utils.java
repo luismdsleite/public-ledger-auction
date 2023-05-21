@@ -1,5 +1,7 @@
 package app.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,6 +16,39 @@ public class Utils {
         calendar.setTime(date);
         String string = calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.MONTH) + "  " + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND);
         return string ;
+    }
+
+    public static String byteToString(byte [] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            String hex = String.format("%02x", b);
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
+    public static byte[] stringToByte(String hexString) {
+        int len = hexString.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)+ Character.digit(hexString.charAt(i + 1), 16));
+        }
+        return data;
+    }
+
+    public static Date parseToDate(String string) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM HH:mm:ss");
+        Date date = null;
+        try {
+            // Parse the string to obtain the Date value
+            date = dateFormat.parse(string);
+
+            // Print the parsed Date value
+            System.out.println("Parsed Date: " + date);
+        } catch (ParseException e) {
+            System.out.println("Invalid date format: " + string);
+        }
+        return date;
     }
 
     public static void printBidsHashMap(HashMap<String, Bid> hashMap) {

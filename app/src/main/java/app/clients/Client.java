@@ -1,139 +1,103 @@
-// package app.clients;
+package app.clients;
 
-// import java.util.HashMap;
-// import java.util.List;
-// import java.util.Scanner;
-// import static java.lang.Thread.sleep;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
-// import java.security.NoSuchAlgorithmException;
+import org.bouncycastle.jcajce.provider.symmetric.util.PBE.Util;
 
-// import app.auction.*;
-// import app.utils.Utils;
-// import s_kademlia.KademliaNode;
-// import s_kademlia.storage.KadStorageValue;
-// import s_kademlia.utils.CryptoHash;
+import static java.lang.Thread.sleep;
 
-// public class Client extends Thread {
-//     public final Scanner scanner =new Scanner(System.in);
-//     public KademliaNode kademliaNode;
-//     public String name;
+import java.security.NoSuchAlgorithmException;
+
+import app.auction.*;
+import app.utils.Utils;
+import s_kademlia.KademliaClient;
+import s_kademlia.node.Node;
+import s_kademlia.storage.KadStorageValue;
+import s_kademlia.utils.CryptoHash;
+
+
+public class Client extends Thread {
+    public final Scanner scanner =new Scanner(System.in);
+    public Node kademliaNode;
+    public String name;
     
-//     public Client(String name, KademliaNode kademliaNode) {
-//         this.name = name;
-//         this.kademliaNode = kademliaNode;
-//     }
+    public Client(String name, Node kademliaNode) {
+        this.name = name;
+        this.kademliaNode = kademliaNode;
+    }
 
-//     @Override
-//     public String toString() {
-//         return "Buyer: " + this.name;
-//     }
+    @Override
+    public String toString() {
+        return "Buyer: " + this.name;
+    }
 
-//     public String getBuyer() {
-//         return this.name;
-//     }
+    public String getBuyer() {
+        return this.name;
+    }
 
-//     public Bid bet(String auctionKey) {
-//         Auction auction = Auctions.getAuction(auctionKey);
-
-//         if(auction == null){
-//             System.out.println("Auction not found");
-//             return null;
-//         }
-
-//         System.out.print("Amount to bet: ");
-//         String amount = scanner.nextLine();
-
-//         Bid bid = new Bid(auction.getKey(), "Thread (" + Thread.currentThread().getId() +")", Integer.parseInt(amount));
-
-//         if(!Auctions.updateBid(bid)){
-//             return null;
-//         }
-//         return bid;
-//     }
-
-//     public byte[] auctionKeytoBytes(String key) {
-//         byte[] keyByte;
-//         try {
-//             keyByte = CryptoHash.toSha256(key.getBytes()).toByteArray();
-//         } catch (NoSuchAlgorithmException e) {
-//             e.printStackTrace();
-//             return null;
-//         }
-//         return keyByte;
-//     }
-
-//     public Bid lastBestBid(String auctionKey) {
-//         byte [] by = auctionKeytoBytes(auctionKey);
-//         if(by == null) {
-//             System.out.println("Key error (1)");
-//         }
-
-//         byte [] auctionBytes = kademliaNode.get(by).getValueBytes();
+    public Bid bet(String auctionKey, Auction auction) {
+        System.out.print("#################################Auction key: " + auction.getKey());
         
-//         String bidArgs [] = Utils.parseGetAuction(auctionBytes);
+        System.out.print("Amount to bet: ");
+        String amount = scanner.nextLine();
 
-//         // formato product_startPri_startDate_endDate_buyer_ammount
+        Bid bid = new Bid(auction.getKey(), "Thread (" + Thread.currentThread().getId() +")", Integer.parseInt(amount));
 
-//         if(Utils.checkBidEmptyGet(bidArgs)) { //se não exists
-//             return null;
-//         }
+        if(!Auctions.updateBid(bid)){
+            return null;
+        }
+        return bid;
+    }
 
-//         Bid bid = new Bid(auctionKey, bidArgs[3], Integer.parseInt(bidArgs[4]));
-//         return bid;
-//     }
+    @Override
+    public void run() {
+        System.out.println("Select auction key to bid.");
+        Auctions.showAuctions();
 
-//     @Override
-//     public void run() {
-//         System.out.println("Select auction key to bid.");
-//         Auctions.showAuctions();
+        String auctionKey = scanner.nextLine();
+        System.out.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$." + Auctions.auctionsData.size() + "AAAAAAAAA\nVALUEEEEEEEEEEEEEEEEEEEEEEEEEEEE" + Auctions.auctionsData.get(auctionKey));
 
-//         String auctionKey = scanner.nextLine();
-        
-//         Bid bid = bet(auctionKey);
+        Auction auction = Auctions.auctionsData.get(auctionKey);
 
-//         if (bid == null){
-//             System.out.println("Bid is null (1)");
-//             return;
-//         }
+        if(auction == null) {
+            System.out.print("Auction not found.");
+            return;
+        }
 
-//         Bid currentBest = lastBestBid(auctionKey); // retorna byte array 
+        Bid bid = bet(auctionKey, auction);
 
-//         while(true) {
-//             if (bid == null){
-//                 System.out.println("Bid is null (2)");
-//                 return;
-//             }
+        Bid currentBest = auction.getBestBid(); 
 
-//             if (bid.getAmount() < currentBest.getAmount()) {
-//                 System.out.println("Another buyer has the highest bid (" + currentBest.getAmount()+ "€) in the auction "+ bid.getKey() + "\nDo u wish to bet?[y/n]");
-//                 String response = scanner.nextLine();
-//                 if(response.equals("y")){
-//                     bid = bet(auctionKey);
-//                     if(bid == null){
-//                         System.out.println("Bid is null (3)");
-//                     } else {
+        while(true) {
+            if (bid == null){
+                System.out.println("Bid is null (2)");
+                return;
+            }
 
-//                         long timestamp = System.currentTimeMillis() / 1000L;
-//                         KadStorageValue kadValue = new KadStorageValue(auctionKey, timestamp);
-//                         byte [] temp = auctionKeytoBytes(auctionKey);
+            if (bid.getAmount() <= currentBest.getAmount()) {
+                System.out.println("Another buyer has the highest bid (" + currentBest.getAmount()+ "€) in the auction "+ bid.getKey());
+                System.out.print("\nDo u wish to bet?[y/n]");
+                String response = scanner.nextLine();
+                if(response.equals("y")){
+                    continue;
+                } else {
+                    return;
+                }
+            } else {
+                long timestamp = System.currentTimeMillis() / 1000L;
+                KadStorageValue kadValue = new KadStorageValue(auction.getValue(), timestamp);
+                KademliaClient.runPut(kademliaNode, Utils.stringToByte(auction.getKey()), kadValue);
+                System.out.println("Bid successful");
+            }
 
-//                         if(temp == null) {
-//                             System.out.println("Key error (2)");
-//                         }
-
-//                         kademliaNode.put(temp, kadValue);
-//                         System.out.println("Bid successful");
-//                     }
-//                 } else {
-//                     return;
-//                 }
-//             }
-
-//             try {
-//                 sleep(1000);
-//             } catch (InterruptedException e) {
-//                 e.printStackTrace();
-//             }
-//         }
-//     }
-// }
+                bid = bet(auctionKey, auction);
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}

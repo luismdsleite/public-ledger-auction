@@ -1,22 +1,20 @@
 package app.auction;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Map.Entry;
 
 import app.utils.Utils;
 
 public class Auctions {
     public static HashMap<String, Auctions> auctionS = new HashMap<>();
+    public static HashMap<String, Auction> auctionsData = new HashMap<>();
+
     Auction auction;
     List<Bid> bids = new ArrayList<>();
-    public static List<Auction> auctions = new ArrayList<>();
 
     public Auctions(Auction auction) {
         this.auction = auction;
@@ -26,20 +24,12 @@ public class Auctions {
         return auction;
     }
 
-    public static List<Auction> getAuctionList() {
-        return auctions;
-    }
-
     public List<Bid> getBids() {
         return this.bids;
     }
 
-    public Bid getLatestBid() {
-        if(bids.isEmpty()){
-            return null;
-        }else{
-            return Utils.highestBid(bids);
-        }
+    public static synchronized void updateAucDatabase(Auction auction) {
+        auctionsData.put(auction.getKey(), auction);
     }
 
     public boolean isUnique(Bid bid) {
@@ -69,12 +59,12 @@ public class Auctions {
     }
 
     public static boolean addAuction(Auction auction) {
-        if(auctionS.containsKey(auction.getKey())) {
+        if(auctionsData.containsKey(auction.getKey())) {
             System.out.println("Auction already active.");
             return false;
         }
-        Auctions newAuction = new Auctions(auction);
-        auctionS.put(auction.getKey(), newAuction);
+
+        auctionsData.put(auction.getKey(), auction);
         System.out.println("New auction added.");
         return true;
     }
@@ -98,7 +88,7 @@ public class Auctions {
     public static void updateActiveAuctions() {
         List<String> inactiveActions = new LinkedList<>();
 
-        for (Entry<String, Auctions> entry : auctionS.entrySet()) {
+        for (Entry<String, Auction> entry : auctionsData.entrySet()) {
             String key = entry.getKey();
 
             if(!new Date().before(getAuction(key).getEndDate())) {
@@ -107,17 +97,8 @@ public class Auctions {
         }
 
         for(String key : inactiveActions){
-            auctionS.remove(key);
+            auctionsData.remove(key);
         }
-    }
-
-    public static List<Bid> getAuctionBids(String auctionKey) {
-        Auctions a = auctionS.get(auctionKey);
-
-        if(a == null)
-            return null;
-
-        return a.getBids();
     }
 
     public static boolean updateBid(Bid bid) {
@@ -138,9 +119,9 @@ public class Auctions {
         return prevBid;
     }
     
-    public void showAuctionState(){
+    public static void showAuctionState(Auction auction){
         System.out.println("Auction : " + auction.getKey());
-        Bid last = this.getLatestBid();
+        Bid last = auction.getBestBid();
         if (last == null){
             System.out.println("No last bid");
         }
@@ -151,8 +132,8 @@ public class Auctions {
     }
 
     public static void showAuctions() {
-        for(Auctions auctions: auctionS.values()){
-            auctions.showAuctionState();
+        for(Auction auction: auctionsData.values()){
+            showAuctionState(auction);
         }
     }
 
