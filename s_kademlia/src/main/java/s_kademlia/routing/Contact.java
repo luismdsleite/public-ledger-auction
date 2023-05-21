@@ -12,6 +12,15 @@ import s_kademlia.node.Node;
 public class Contact implements Comparable<Contact> {
     private final Node n;
     private long lastSeen;
+    private int failedTries;
+
+    public int getFailedTries() {
+        return failedTries;
+    }
+
+    public void setFailedTries(int failedTries) {
+        this.failedTries = failedTries;
+    }
 
     public Contact(Node n) {
         this.n = n;

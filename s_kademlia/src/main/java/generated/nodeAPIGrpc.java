@@ -18,27 +18,27 @@ public final class nodeAPIGrpc {
   public static final String SERVICE_NAME = "proto.nodeAPI";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.NodeProto,
+  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.FindNodeRequest,
       generated.NodeAPI.NodesClose> getFindNodeMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "findNode",
-      requestType = generated.NodeAPI.NodeProto.class,
+      requestType = generated.NodeAPI.FindNodeRequest.class,
       responseType = generated.NodeAPI.NodesClose.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<generated.NodeAPI.NodeProto,
+  public static io.grpc.MethodDescriptor<generated.NodeAPI.FindNodeRequest,
       generated.NodeAPI.NodesClose> getFindNodeMethod() {
-    io.grpc.MethodDescriptor<generated.NodeAPI.NodeProto, generated.NodeAPI.NodesClose> getFindNodeMethod;
+    io.grpc.MethodDescriptor<generated.NodeAPI.FindNodeRequest, generated.NodeAPI.NodesClose> getFindNodeMethod;
     if ((getFindNodeMethod = nodeAPIGrpc.getFindNodeMethod) == null) {
       synchronized (nodeAPIGrpc.class) {
         if ((getFindNodeMethod = nodeAPIGrpc.getFindNodeMethod) == null) {
           nodeAPIGrpc.getFindNodeMethod = getFindNodeMethod =
-              io.grpc.MethodDescriptor.<generated.NodeAPI.NodeProto, generated.NodeAPI.NodesClose>newBuilder()
+              io.grpc.MethodDescriptor.<generated.NodeAPI.FindNodeRequest, generated.NodeAPI.NodesClose>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "findNode"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.NodeAPI.NodeProto.getDefaultInstance()))
+                  generated.NodeAPI.FindNodeRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   generated.NodeAPI.NodesClose.getDefaultInstance()))
               .setSchemaDescriptor(new nodeAPIMethodDescriptorSupplier("findNode"))
@@ -142,6 +142,68 @@ public final class nodeAPIGrpc {
     return getFindValueMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.PutRequest,
+      generated.NodeAPI.PutResponse> getPutMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "put",
+      requestType = generated.NodeAPI.PutRequest.class,
+      responseType = generated.NodeAPI.PutResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.NodeAPI.PutRequest,
+      generated.NodeAPI.PutResponse> getPutMethod() {
+    io.grpc.MethodDescriptor<generated.NodeAPI.PutRequest, generated.NodeAPI.PutResponse> getPutMethod;
+    if ((getPutMethod = nodeAPIGrpc.getPutMethod) == null) {
+      synchronized (nodeAPIGrpc.class) {
+        if ((getPutMethod = nodeAPIGrpc.getPutMethod) == null) {
+          nodeAPIGrpc.getPutMethod = getPutMethod =
+              io.grpc.MethodDescriptor.<generated.NodeAPI.PutRequest, generated.NodeAPI.PutResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "put"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.NodeAPI.PutRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.NodeAPI.PutResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new nodeAPIMethodDescriptorSupplier("put"))
+              .build();
+        }
+      }
+    }
+    return getPutMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.GetRequest,
+      generated.NodeAPI.GetResponse> getGetMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "get",
+      requestType = generated.NodeAPI.GetRequest.class,
+      responseType = generated.NodeAPI.GetResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.NodeAPI.GetRequest,
+      generated.NodeAPI.GetResponse> getGetMethod() {
+    io.grpc.MethodDescriptor<generated.NodeAPI.GetRequest, generated.NodeAPI.GetResponse> getGetMethod;
+    if ((getGetMethod = nodeAPIGrpc.getGetMethod) == null) {
+      synchronized (nodeAPIGrpc.class) {
+        if ((getGetMethod = nodeAPIGrpc.getGetMethod) == null) {
+          nodeAPIGrpc.getGetMethod = getGetMethod =
+              io.grpc.MethodDescriptor.<generated.NodeAPI.GetRequest, generated.NodeAPI.GetResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "get"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.NodeAPI.GetRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.NodeAPI.GetResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new nodeAPIMethodDescriptorSupplier("get"))
+              .build();
+        }
+      }
+    }
+    return getGetMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -195,7 +257,7 @@ public final class nodeAPIGrpc {
 
     /**
      */
-    public void findNode(generated.NodeAPI.NodeProto request,
+    public void findNode(generated.NodeAPI.FindNodeRequest request,
         io.grpc.stub.StreamObserver<generated.NodeAPI.NodesClose> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getFindNodeMethod(), responseObserver);
     }
@@ -221,13 +283,33 @@ public final class nodeAPIGrpc {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getFindValueMethod(), responseObserver);
     }
 
+    /**
+     * <pre>
+     * Client Side APIs
+     * </pre>
+     */
+    public void put(generated.NodeAPI.PutRequest request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.PutResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getPutMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Client Side APIs
+     * </pre>
+     */
+    public void get(generated.NodeAPI.GetRequest request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.GetResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             getFindNodeMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                generated.NodeAPI.NodeProto,
+                generated.NodeAPI.FindNodeRequest,
                 generated.NodeAPI.NodesClose>(
                   this, METHODID_FIND_NODE)))
           .addMethod(
@@ -251,6 +333,20 @@ public final class nodeAPIGrpc {
                 generated.NodeAPI.FindRequest,
                 generated.NodeAPI.FindResponse>(
                   this, METHODID_FIND_VALUE)))
+          .addMethod(
+            getPutMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                generated.NodeAPI.PutRequest,
+                generated.NodeAPI.PutResponse>(
+                  this, METHODID_PUT)))
+          .addMethod(
+            getGetMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                generated.NodeAPI.GetRequest,
+                generated.NodeAPI.GetResponse>(
+                  this, METHODID_GET)))
           .build();
     }
   }
@@ -274,7 +370,7 @@ public final class nodeAPIGrpc {
 
     /**
      */
-    public void findNode(generated.NodeAPI.NodeProto request,
+    public void findNode(generated.NodeAPI.FindNodeRequest request,
         io.grpc.stub.StreamObserver<generated.NodeAPI.NodesClose> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getFindNodeMethod(), getCallOptions()), request, responseObserver);
@@ -303,6 +399,28 @@ public final class nodeAPIGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getFindValueMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     * <pre>
+     * Client Side APIs
+     * </pre>
+     */
+    public void put(generated.NodeAPI.PutRequest request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.PutResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getPutMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Client Side APIs
+     * </pre>
+     */
+    public void get(generated.NodeAPI.GetRequest request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.GetResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getGetMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -324,7 +442,7 @@ public final class nodeAPIGrpc {
 
     /**
      */
-    public generated.NodeAPI.NodesClose findNode(generated.NodeAPI.NodeProto request) {
+    public generated.NodeAPI.NodesClose findNode(generated.NodeAPI.FindNodeRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getFindNodeMethod(), getCallOptions(), request);
     }
@@ -349,6 +467,26 @@ public final class nodeAPIGrpc {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getFindValueMethod(), getCallOptions(), request);
     }
+
+    /**
+     * <pre>
+     * Client Side APIs
+     * </pre>
+     */
+    public generated.NodeAPI.PutResponse put(generated.NodeAPI.PutRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getPutMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Client Side APIs
+     * </pre>
+     */
+    public generated.NodeAPI.GetResponse get(generated.NodeAPI.GetRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetMethod(), getCallOptions(), request);
+    }
   }
 
   /**
@@ -371,7 +509,7 @@ public final class nodeAPIGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<generated.NodeAPI.NodesClose> findNode(
-        generated.NodeAPI.NodeProto request) {
+        generated.NodeAPI.FindNodeRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getFindNodeMethod(), getCallOptions()), request);
     }
@@ -399,12 +537,36 @@ public final class nodeAPIGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getFindValueMethod(), getCallOptions()), request);
     }
+
+    /**
+     * <pre>
+     * Client Side APIs
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.NodeAPI.PutResponse> put(
+        generated.NodeAPI.PutRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getPutMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
+     * Client Side APIs
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.NodeAPI.GetResponse> get(
+        generated.NodeAPI.GetRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getGetMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_FIND_NODE = 0;
   private static final int METHODID_PING = 1;
   private static final int METHODID_STORE = 2;
   private static final int METHODID_FIND_VALUE = 3;
+  private static final int METHODID_PUT = 4;
+  private static final int METHODID_GET = 5;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -424,7 +586,7 @@ public final class nodeAPIGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_FIND_NODE:
-          serviceImpl.findNode((generated.NodeAPI.NodeProto) request,
+          serviceImpl.findNode((generated.NodeAPI.FindNodeRequest) request,
               (io.grpc.stub.StreamObserver<generated.NodeAPI.NodesClose>) responseObserver);
           break;
         case METHODID_PING:
@@ -438,6 +600,14 @@ public final class nodeAPIGrpc {
         case METHODID_FIND_VALUE:
           serviceImpl.findValue((generated.NodeAPI.FindRequest) request,
               (io.grpc.stub.StreamObserver<generated.NodeAPI.FindResponse>) responseObserver);
+          break;
+        case METHODID_PUT:
+          serviceImpl.put((generated.NodeAPI.PutRequest) request,
+              (io.grpc.stub.StreamObserver<generated.NodeAPI.PutResponse>) responseObserver);
+          break;
+        case METHODID_GET:
+          serviceImpl.get((generated.NodeAPI.GetRequest) request,
+              (io.grpc.stub.StreamObserver<generated.NodeAPI.GetResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -504,6 +674,8 @@ public final class nodeAPIGrpc {
               .addMethod(getPingMethod())
               .addMethod(getStoreMethod())
               .addMethod(getFindValueMethod())
+              .addMethod(getPutMethod())
+              .addMethod(getGetMethod())
               .build();
         }
       }

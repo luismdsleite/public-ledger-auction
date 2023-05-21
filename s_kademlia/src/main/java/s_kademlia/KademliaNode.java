@@ -8,6 +8,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import com.google.protobuf.ByteString;
@@ -17,7 +18,9 @@ import generated.NodeAPI.*;
 import generated.nodeAPIGrpc.nodeAPIImplBase;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
+import s_kademlia.node.KademliaID;
 import s_kademlia.node.Node;
 import s_kademlia.routing.RoutingTable;
 import s_kademlia.storage.KadStorageManager;
@@ -37,6 +40,7 @@ public class KademliaNode extends nodeAPIImplBase {
     public KademliaNode(Node localNode) {
         this.localNode = localNode;
         routingTable = new RoutingTable(localNode);
+        routingTable.insert(localNode);
         storageManager = new KadStorageManager();
     }
 
@@ -67,7 +71,7 @@ public class KademliaNode extends nodeAPIImplBase {
         Node bootstrapNode = new Node(bootstrapName, bootstrapPort);
         this.bootstrap(bootstrapNode);
     }
-    
+
     /**
      * Joins a network via the Bootstrap Node
      * 
@@ -75,19 +79,23 @@ public class KademliaNode extends nodeAPIImplBase {
      * @param bootstrapPort Access Point port of the Bootstrap node
      */
     private void bootstrap(Node bootstrapNode) {
-        routingTable.insert(bootstrapNode);
         logger.info("Initiating Bootstrap");
         // Establish a Channel with the bootstrap node and execute a
         // FIND_NODE(MY_NODE_ID), this will return a list of the K closest nodes.
         ManagedChannel channel = ManagedChannelBuilder.forAddress(bootstrapNode.getName(), bootstrapNode.getPort())
-        .usePlaintext()
-        .build();
+                .usePlaintext()
+                .build();
         logger.info("Created Channel with Bootstrap Node " + channel + " to " + bootstrapNode.getName() + ":"
-        + bootstrapNode.getPort());
+                + bootstrapNode.getPort());
         var stub = nodeAPIGrpc.newBlockingStub(channel);
         NodeProto nodeProto = KademliaUtils.nodeToNodeProto(this.localNode);
 
-        NodesClose response = stub.findNode(nodeProto);
+        FindNodeRequest findNodeRequest = FindNodeRequest.newBuilder()
+                .setNode(nodeProto)
+                .setKey(ByteString.copyFrom(this.getHash()))
+                .build();
+
+        NodesClose response = stub.findNode(findNodeRequest);
         List<Node> closestToAsk = new LinkedList<>();
         for (NodeProto neighProto : response.getNodesList()) {
             try {
@@ -101,18 +109,18 @@ public class KademliaNode extends nodeAPIImplBase {
                 logger.severe("Error: Could not find hash" + KademliaUtils.HASH_ALGO);
                 e.printStackTrace();
             }
-            
+
         }
-        
+
         logger.info("Received bootstrap findNode response, contacting closest nodes");
         // After the FIND_NODE call to the bootstrap node, we contact our K closests
         // nodes with a FIND_NODE(MY_NODE_ID).
         for (Node neigh : closestToAsk) {
             if (neigh.equals(this.getNode()))
-            continue; // Skip self
+                continue; // Skip self
             channel = ManagedChannelBuilder.forAddress(neigh.getName(), neigh.getPort())
-            .usePlaintext()
-            .build();
+                    .usePlaintext()
+                    .build();
             stub = nodeAPIGrpc.newBlockingStub(channel);
             nodeProto = KademliaUtils.nodeToNodeProto(this.localNode);
             for (NodeProto neighProto : response.getNodesList()) {
@@ -129,9 +137,9 @@ public class KademliaNode extends nodeAPIImplBase {
             }
         }
 
-        logger.info("Bootstrap complete, obtain the following nodes" + routingTable);
+        logger.info("Bootstrap complete, routing table:\n" + routingTable);
     }
-    
+
     public Node getNode() {
         return localNode;
     }
@@ -139,24 +147,31 @@ public class KademliaNode extends nodeAPIImplBase {
     public PrivateKey getPvtKey() {
         return this.getNode().getNodeID().getPrvKey();
     }
+
     public PublicKey getPubKey() {
         return this.getNode().getNodeID().getPubKey();
     }
 
-    // Returning the K nodes closest to the requested node.
+    public byte[] getHash() {
+        return this.getNode().getNodeID().hashBytes();
+    }
+
+    // Returning the K nodes closest to the requested key.
     @Override
-    public void findNode(NodeProto request, StreamObserver<NodesClose> responseObserver) {
+    public void findNode(FindNodeRequest request, StreamObserver<NodesClose> responseObserver) {
         logger.info("Received FIND_NOME: " + request);
         var nodesClose = new ArrayList<NodeProto>();
         try {
-            var n = KademliaUtils.nodeProtoToNode(request);
+            // Updating routing table with the node that made the request.
+            var n = KademliaUtils.nodeProtoToNode(request.getNode());
             routingTable.insert(n);
-            
-            var neighbors = routingTable.findClosest(n.getNodeID(), KademliaUtils.K);
+
+            // Find the K closest nodes to the requested key.
+            var kadID = new KademliaID(request.getKey().toByteArray());
+            var neighbors = routingTable.findClosest(kadID, KademliaUtils.K);
             for (var neigh : neighbors) {
                 logger.info("Neighbor(" + neigh + ")");
                 nodesClose.add(KademliaUtils.nodeToNodeProto(neigh));
-                // nodesCloseBuilder.addNodes(KademliaUtils.nodeToNodeProto(neigh));
             }
         } catch (NoSuchAlgorithmException e) {
             logger.severe("Error: Could not find algorithm" + KademliaUtils.CRYPTO_ALGO);
@@ -183,7 +198,6 @@ public class KademliaNode extends nodeAPIImplBase {
         responseObserver.onNext(KademliaUtils.nodeToNodeProto(localNode));
         responseObserver.onCompleted();
     }
-
 
     /**
      * Store a value in the network. Does not check if the key really belongs to it.
@@ -235,21 +249,182 @@ public class KademliaNode extends nodeAPIImplBase {
         responseObserver.onCompleted();
     }
 
+    /**
+     * Execute a FIND_NODE rpc call to a node and updat routing table.
+     * 
+     * @param kadID
+     * @param node
+     * @return
+     * @throws StatusRuntimeException
+     */
+    private NodesClose runFindNode(KademliaID kadID, Node node) throws StatusRuntimeException {
+        var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
+                .usePlaintext()
+                .build()).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+
+        FindNodeRequest findNodeRequest = FindNodeRequest.newBuilder()
+                .setNode(KademliaUtils.nodeToNodeProto(this.localNode))
+                .setKey(ByteString.copyFrom(kadID.hashBytes()))
+                .build();
+
+        NodesClose response = stub.findNode(findNodeRequest);
+
+        for (NodeProto n : response.getNodesList()) {
+            try {
+                routingTable.insert(KademliaUtils.nodeProtoToNode(n));
+            } catch (NoSuchAlgorithmException e) {
+                logger.severe("Error: Could not find algorithm" + KademliaUtils.CRYPTO_ALGO);
+                e.printStackTrace();
+            } catch (InvalidKeySpecException e) {
+                logger.severe("Error: Could not find hash" + KademliaUtils.HASH_ALGO);
+                e.printStackTrace();
+            }
+        }
+        return response;
+    }
+
+    private boolean runStore(Node node, KademliaID kadID, KadStorageValue value)
+            throws StatusRuntimeException {
+        var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
+                .usePlaintext()
+                .build()).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+
+        StoreRequest storeRequest = StoreRequest.newBuilder()
+                .setKey(ByteString.copyFrom(kadID.hashBytes()))
+                .setValue(ByteString.copyFrom(value.getValueBytes()))
+                .setTimestamp(value.getTimestamp())
+                .build();
+
+        StoreResponse response = stub.store(storeRequest);
+        return response.getSuccess();
+    }
+
+    private KadStorageValue runGet(Node node, KademliaID Key) {
+        var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
+                .usePlaintext()
+                .build()).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+
+        FindRequest findRequest = FindRequest.newBuilder()
+                .setKey(ByteString.copyFrom(Key.hashBytes()))
+                .build();
+
+        FindResponse response = stub.findValue(findRequest);
+        if (response.getSuccess()) {
+            return new KadStorageValue(new BigInteger(1, response.getValue().toByteArray()), response.getTimestamp());
+        } else {
+            return null;
+        }
+    }
+
     // --------- Public API --------- //
-    public boolean put(BigInteger key, BigInteger value) {
-        throw new UnsupportedOperationException("Function not yet implemented");
-    }
-    
-    public boolean put(byte[] key, byte[] value) {
-        throw new UnsupportedOperationException("Function not yet implemented");
+    /**
+     * Put a value in the network.
+     * To find out what node is responsible for the key we do the following
+     * procedure:
+     * - Find the K closest nodes to the key.
+     * - Send a FIND_NODE(key) request to each of them.
+     * - Check if the routing table has a node closer to the key than my previous
+     * closest node.
+     * - Store in the closest node if one is not found, repeat otherwise.
+     * 
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean put(BigInteger key, KadStorageValue value) {
+        // These searches never return null since we add the local node to the routing.
+        var kadID = new KademliaID(key);
+        var closestNodeBefore = routingTable.findClosest(kadID, 1).get(0);
+        try {
+            Node closestNodeAfter = KademliaUtils.nodeProtoToNode(runFindNode(kadID, closestNodeBefore).getNodes(0));
+            // If the closest node is still the same, then we can send him the value.
+            if (closestNodeBefore.equals(closestNodeAfter)) {
+                return runStore(closestNodeBefore, kadID, value);
+            } else {
+                return put(key, value);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            logger.severe("Error: Could not find algorithm" + KademliaUtils.CRYPTO_ALGO);
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            logger.severe("Error: Could not find hash" + KademliaUtils.HASH_ALGO);
+            e.printStackTrace();
+        } catch (StatusRuntimeException e) {
+            logger.info("The closest node is not responding, skipping");
+            e.printStackTrace();
+        }
+        // The ALGO and hash problem will never happen, so the only way to get here is
+        // if the request timeouts
+        routingTable.penaltyContact(closestNodeBefore);
+        return put(key, value); // Try Again.
+
     }
 
-    public boolean get(BigInteger key, BigInteger value) {
-        throw new UnsupportedOperationException("Function not yet implemented");
+    /**
+     * Executes FIND_NODE until closest node converges, then executes a FIND_VALUE.
+     * 
+     * @param key
+     * @param priority_index
+     * @return
+     */
+    public KadStorageValue get(BigInteger key, int priority_index) {
+        // These searches never return null since we add the local node to the routing.
+        var kadID = new KademliaID(key);
+        var closestNodeBefore = routingTable.findClosest(kadID, 1).get(priority_index);
+        try {
+            Node closestNodeAfter = KademliaUtils.nodeProtoToNode(runFindNode(kadID, closestNodeBefore).getNodes(0));
+            // If the closest node is still the same, then we can get the value.
+            if (closestNodeBefore.equals(closestNodeAfter)) {
+                var value = runGet(closestNodeBefore, kadID);
+                if (value == null) { // Node did not have the key, try the next closest node.
+                    return get(key, priority_index + 1);
+                } else {
+                    return value;
+                }
+            }
+            // Found a closer node
+            else {
+                return get(key, 0);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            logger.severe("Error: Could not find algorithm" + KademliaUtils.CRYPTO_ALGO);
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            logger.severe("Error: Could not find hash" + KademliaUtils.HASH_ALGO);
+            e.printStackTrace();
+        } catch (StatusRuntimeException e) {
+            logger.info("The closest node is not responding, skipping");
+            e.printStackTrace();
+        }
+        // The ALGO and hash problem will never happen, so the only way to get here is
+        // if the request timeouts
+        routingTable.penaltyContact(closestNodeBefore);
+        return get(key, 0); // Try Again.
     }
 
-    public boolean get(byte[] key, byte[] value) {
-        throw new UnsupportedOperationException("Function not yet implemented");
+    @Override
+    public void get(GetRequest request, StreamObserver<GetResponse> responseObserver) {
+        var kadID = new BigInteger(1, request.getKey().toByteArray());
+        var value = this.get(kadID, 0);
+        responseObserver.onNext(GetResponse.newBuilder()
+                .setTimestamp(value.getTimestamp())
+                .setValue(ByteString.copyFrom(value.getValueBytes()))
+                .build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void put(PutRequest request, StreamObserver<PutResponse> responseObserver) {
+        var kadID = new BigInteger(1, request.getKey().toByteArray());
+        var value = new BigInteger(1, request.getValue().toByteArray());
+        var timestamp = request.getTimestamp();
+
+        var storageEntry = new KadStorageValue(value, timestamp);
+        var status = put(kadID, storageEntry);
+        responseObserver.onNext(PutResponse.newBuilder()
+                .setSuccess(status)
+                .build());
+        responseObserver.onCompleted();
     }
 
 }

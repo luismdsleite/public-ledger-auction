@@ -37,7 +37,8 @@ public class RoutingTable {
     private void initializeBuckets() {
         // Create a bucket per bit present in the hash.
         this.buckets = new Bucket[KademliaID.ID_LENGTH];
-        for (int i = 0; i < buckets.length; i++) {
+        this.buckets[0] = new Bucket(1);
+        for (int i = 1; i < buckets.length; i++) {
             // 256 nodes are stored in the closest bucket, 255 in the second closest, ...
             buckets[i] = new Bucket(i);
         }
@@ -75,15 +76,7 @@ public class RoutingTable {
      * @param n The node to add
      */
     public synchronized final void insert(Node n) {
-        System.out.println("Inserted Node " + n + " in " + this.getBucketIndex(n.getNodeID()));
-        
-        if(n.equals(myNode)){
-            logger.info( "Error: Trying to insert own node into bucket");
-            return;
-        }
-        
         this.buckets[this.getBucketIndex(n.getNodeID())].insert(n);
-        logger.info("Routing table added: " +  n);
         // System.out.println(this.buckets[0]);
     }
 
@@ -132,6 +125,16 @@ public class RoutingTable {
     @Override
     public String toString() {
         return Arrays.toString(buckets);
+    }
+
+    /**
+     * Adds a penalty to a node. This is used when a node fails to respond to a RPC.
+     * After a node reaches {@value s_kademlia.utils.KademliaUtils#MAX_RETRIES} number of failed attempts it is removed from the routing table.
+     * @param n
+     */
+    public synchronized void penaltyContact(Node n) {
+        Bucket bucket = this.buckets[this.getBucketIndex(n.getNodeID())];
+        bucket.penaltyContact(n);
     }
 
 }

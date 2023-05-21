@@ -4,10 +4,12 @@ option java_package = "generated";
 
 // Msg Handler with lamport clocks support.
 service nodeAPI{
-    rpc findNode(NodeProto) returns (NodesClose);
+    rpc findNode(FindNodeRequest) returns (NodesClose);
     rpc ping(NodeProto) returns (NodeProto);
     rpc store(StoreRequest) returns (StoreResponse);
     rpc findValue(FindRequest) returns (FindResponse);
+    rpc put(PutRequest) returns (PutResponse); // Client Side APIs
+    rpc get(GetRequest) returns (GetResponse); // Client Side APIs
 }
 
 // Named NodeProto to not mistake with the class s_kademlia.node.Node.
@@ -33,11 +35,41 @@ message StoreResponse{
     bool success = 3;
 }
 
+
+message FindNodeRequest{
+    NodeProto node = 1;
+    bytes key = 2;
+}
+
+
 message FindRequest{
     bytes key = 1;
 }
 
 message FindResponse{
+    bytes value = 1;
+    int64 timestamp = 2;
+    bool success = 3;
+}
+
+message PutRequest{
+    bytes key = 1;
+    bytes value = 2;
+    int64 timestamp = 3;
+}
+
+message PutResponse{
+    bytes key = 1;
+    int64 timestamp = 2;
+    bool success = 3;
+}
+
+
+message GetRequest{
+    bytes key = 1;
+}
+
+message GetResponse{
     bytes value = 1;
     int64 timestamp = 2;
     bool success = 3;

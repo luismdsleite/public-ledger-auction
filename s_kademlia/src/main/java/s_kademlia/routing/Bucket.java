@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import s_kademlia.node.Node;
+import s_kademlia.utils.KademliaUtils;
 
 /**
  * Represents an S/Kademlia bucket
  */
 public class Bucket {
+    public static final Logger logger = Logger.getLogger(RoutingTable.class.getName());
     private TreeSet<Contact> contacts;
     private final int K_Nodes; // How many nodes each bucket can hold.
 
@@ -100,7 +103,7 @@ public class Bucket {
         return ret;
     }
 
-    public boolean remove(Node node) {
+    public synchronized boolean remove(Node node) {
         Contact contact = new Contact(node);
         return contacts.remove(contact);
     }
@@ -120,5 +123,21 @@ public class Bucket {
     @Override
     public String toString() {
         return contacts.toString();
+    }
+
+    /**
+     * 
+     */
+    public synchronized void penaltyContact(Node n) {
+        Contact contact = this.getFromContacts(n);
+        this.contacts.remove(contact);
+        if (contact.getFailedTries() > KademliaUtils.MAX_RETRIES) {
+            this.removeFromContacts(n);
+        } else {
+            logger.info("Contact exceeded max retries, removing it ");
+            contact.setFailedTries(contact.getFailedTries() + 1);
+            this.insert(contact);
+        }
+
     }
 }

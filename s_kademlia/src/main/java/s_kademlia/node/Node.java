@@ -70,4 +70,12 @@ public class Node implements Comparable<Node> {
         return this.getNodeID().compareTo(o.getNodeID());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Node) {
+            return this.compareTo(((Node) o)) == 0;
+        }
+        return false;
+    }
+
 }

@@ -20,6 +20,7 @@ public class KademliaID implements Comparable<KademliaID> {
     private static final int zeroBits = 20; // How many bytes of the key need to be zero (Static Puzzle)
     private PublicKey pubKey; // Public Key
     private PrivateKey prvKey; // Private Key
+
     private BigInteger hash; // Hash of the Public Key, Used as node ID
 
     /**
@@ -38,6 +39,19 @@ public class KademliaID implements Comparable<KademliaID> {
     }
 
     /**
+     * Used only by keys, to find the server who store them.
+     * 
+     * @param hash
+     */
+    public KademliaID(BigInteger hash) {
+        this.hash = hash;
+    }
+
+    public KademliaID(byte[] hash) {
+        this.hash = new BigInteger(1, hash);
+    }
+
+    /**
      * Construct the NodeID from a public key. NodeID will become the SHA-256 of the
      * Public Key. Cannot sign messages since the private key it not provided.
      * 
@@ -49,7 +63,6 @@ public class KademliaID implements Comparable<KademliaID> {
         this.pubKey = pubKey;
         hash = CryptoHash.toSha256(this.getPubKeyBytes());
     }
-
 
     public PublicKey getPubKey() {
         return pubKey;
@@ -66,7 +79,7 @@ public class KademliaID implements Comparable<KademliaID> {
         return this.pubKey.getEncoded();
     }
 
-    public byte[] getPvtKeyBytes() {
+    public byte[] getPvrKeyBytes() {
         return this.prvKey.getEncoded();
     }
 
@@ -104,7 +117,7 @@ public class KademliaID implements Comparable<KademliaID> {
     public boolean equals(Object o) {
         if (o instanceof KademliaID) {
             KademliaID nid = (KademliaID) o;
-            return this.hashCode() == nid.hashCode();
+            return this.compareTo(nid) == 0;
         }
         return false;
     }
