@@ -18,7 +18,7 @@ import com.ledger.wallet.WalletAddressGenerator;
 
 import java.security.*;
 
-import com.ledger.security.RSAKeyGenerator;
+import com.ledger.security.RSASignatureUtils;
 // import s_kademlia.LaunchNode;
 
 public class Main {
@@ -71,27 +71,31 @@ public class Main {
         System.out.println(blockchain);
 
         // Generate wallet address
-        String generatedAddress = WalletAddressGenerator.generateWalletAddress();
-        System.out.println("Generated Address: " + generatedAddress);
+        // String generatedAddress = WalletAddressGenerator.generateWalletAddress();
+        // System.out.println("Generated Address: " + generatedAddress);
         
         // Verify if wallet address is valid
-        String testAddress = "0x4A1DDCC299EEE65E089B54AF6A21BD59C4BCA52B";
-        boolean isValid = WalletAddressGenerator.verifyAddressFormat(testAddress);
-        System.out.println("Is Valid Address: " + isValid);
-
-        // Generate keys
-        RSAKeyGenerator keyGenerator = new RSAKeyGenerator();
+        // String testAddress = "0x4A1DDCC299EEE65E089B54AF6A21BD59C4BCA52B";
+        // boolean isValid = WalletAddressGenerator.verifyAddressFormat(testAddress);
+        // System.out.println("Is Valid Address: " + isValid);
         
         // Get keys
-        String publicKey = keyGenerator.getPublicKey();
-        String privateKey = keyGenerator.getPrivateKey();
+        // Generate an RSA key pair
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048); // Set the desired key size
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
+        // Retrieve the public and private keys
+        PublicKey publicKey = keyPair.getPublic();
+        PrivateKey privateKey = keyPair.getPrivate();
+        
         // Create transaction
-        Transaction test = new Transaction("absc", "dfawd", 0, 0);
+        Transaction test = new Transaction("absc", "dfawd", publicKey, 0, 0);
 
         // Sign transaction
-        test.setSignature(keyGenerator.signString(test.getHash(), privateKey));
+        test.setSignature(RSASignatureUtils.signString(test.getHash(), privateKey));
+
         // Verify transaction
-        System.out.println(keyGenerator.verifyString(test.getHash(), test.getSignature(), publicKey));
+        System.out.println(RSASignatureUtils.verifyString(test.getHash(), test.getSignature(), publicKey));
     }
 }
