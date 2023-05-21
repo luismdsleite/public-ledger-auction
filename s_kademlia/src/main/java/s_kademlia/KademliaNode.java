@@ -283,6 +283,9 @@ public class KademliaNode extends nodeAPIImplBase {
         return response;
     }
 
+    /**
+     * Execute a STORE rpc call to a node.
+     */
     private boolean runStore(Node node, KademliaID kadID, KadStorageValue value)
             throws StatusRuntimeException {
         var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
@@ -299,6 +302,13 @@ public class KademliaNode extends nodeAPIImplBase {
         return response.getSuccess();
     }
 
+    /**
+     * Execute a GET rpc call to a node.
+     * 
+     * @param node
+     * @param Key
+     * @return
+     */
     private KadStorageValue runGet(Node node, KademliaID Key) {
         var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
@@ -402,6 +412,12 @@ public class KademliaNode extends nodeAPIImplBase {
         return get(key, 0); // Try Again.
     }
 
+
+    public static put(byte[] key, KadStorageValue value){
+        this.put(new BigInteger(1, key), value);
+    }
+
+    // --------- RPC Client API --------- //
     @Override
     public void get(GetRequest request, StreamObserver<GetResponse> responseObserver) {
         var kadID = new BigInteger(1, request.getKey().toByteArray());
