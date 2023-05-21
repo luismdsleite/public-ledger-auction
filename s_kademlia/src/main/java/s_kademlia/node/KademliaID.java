@@ -50,6 +50,15 @@ public class KademliaID implements Comparable<KademliaID> {
         hash = CryptoHash.toSha256(this.getPubKeyBytes());
     }
 
+
+    public PublicKey getPubKey() {
+        return pubKey;
+    }
+
+    public PrivateKey getPrvKey() {
+        return prvKey;
+    }
+
     /**
      * @return Returns the public key used
      */

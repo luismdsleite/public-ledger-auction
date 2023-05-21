@@ -133,12 +133,12 @@ public class KademliaNode extends nodeAPIImplBase {
     public Node getNode() {
         return localNode;
     }
-    
-    public byte[] getPvtKeyBytes(){
-        return this.getNode().getNodeID().getPvtKeyBytes();
+
+    public PrivateKey getPvtKey() {
+        return this.getNode().getNodeID().getPrvKey();
     }
-    public byte[] getPubKeyBytes() {
-        return this.getNode().getNodeID().getPubKeyBytes();
+    public PublicKey getPubKey() {
+        return this.getNode().getNodeID().getPubKey();
     }
 
     // Returning the K nodes closest to the requested node.
