@@ -3,6 +3,7 @@ package com.ledger.transaction;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.Date;
 
 public class Transaction {
@@ -10,14 +11,14 @@ public class Transaction {
     private String recipient;
     private String hash;
     private String signature;
-    private String publicKey;
+    private PublicKey publicKey;
     
     private float amount;
     private float fee;
     
     private long timestamp;
 
-    public Transaction(String sender, String recipient, String publicKey, float amount, float fee) {
+    public Transaction(String sender, String recipient, PublicKey publicKey, float amount, float fee) {
         this.sender = sender;
         this.recipient = recipient;
         this.amount = amount;
