@@ -1,7 +1,7 @@
-package com.ledger.validation;
+package ledger.validation;
 
-import com.ledger.blockchain.Block;
-import com.ledger.consensus.ProofOfWork;
+import ledger.blockchain.Block;
+import ledger.consensus.ProofOfWork;
 
 public class BlockValidator {
     /**

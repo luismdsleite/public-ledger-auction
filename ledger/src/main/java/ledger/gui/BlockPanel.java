@@ -1,4 +1,4 @@
-package com.ledger.gui;
+package ledger.gui;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -11,8 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import com.ledger.blockchain.Block;
-import com.ledger.transaction.Transaction;
+import ledger.blockchain.Block;
+import ledger.transaction.Transaction;
 
 public class BlockPanel extends JPanel {
 

@@ -1,10 +1,10 @@
-package com.ledger.validation;
+package ledger.validation;
 
 import java.util.List;
 
-import com.ledger.blockchain.Block;
-import com.ledger.blockchain.Blockchain;
-import com.ledger.consensus.ProofOfWork;
+import ledger.blockchain.Block;
+import ledger.blockchain.Blockchain;
+import ledger.consensus.ProofOfWork;
 
 public class BlockChainValidator {
     

@@ -1,9 +1,9 @@
-package com.ledger.validation;
+package ledger.validation;
 
 import java.util.Date;
 
-import com.ledger.transaction.Transaction;
-import com.ledger.wallet.WalletAddressGenerator;
+import ledger.transaction.Transaction;
+import ledger.wallet.WalletAddressGenerator;
 
 public class TransactionValidator {
 

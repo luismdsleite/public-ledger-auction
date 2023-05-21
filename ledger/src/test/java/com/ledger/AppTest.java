@@ -1,4 +1,4 @@
-package com.ledger;
+package ledger;
 
 import static org.junit.Assert.assertTrue;
 

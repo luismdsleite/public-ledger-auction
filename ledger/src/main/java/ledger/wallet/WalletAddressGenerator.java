@@ -1,4 +1,4 @@
-package com.ledger.wallet;
+package ledger.wallet;
 
 import java.util.Random;
 

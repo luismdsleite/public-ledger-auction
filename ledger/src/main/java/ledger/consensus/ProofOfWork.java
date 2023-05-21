@@ -1,12 +1,12 @@
-package com.ledger.consensus;
+package ledger.consensus;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.ledger.blockchain.Block;
-import com.ledger.transaction.Transaction;
-import com.ledger.validation.BlockValidator;
+import ledger.blockchain.Block;
+import ledger.transaction.Transaction;
+import ledger.validation.BlockValidator;
 
 public class ProofOfWork {
 

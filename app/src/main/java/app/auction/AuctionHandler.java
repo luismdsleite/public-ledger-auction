@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.bouncycastle.jcajce.provider.symmetric.util.PBE.Util;
 
-import com.ledger.security.RSASignatureUtils;
-import com.ledger.transaction.Transaction;
+import ledger.security.RSASignatureUtils;
+import ledger.transaction.Transaction;
 
 import app.utils.Utils;
 

@@ -1,4 +1,4 @@
-package com.ledger.security;
+package ledger.security;
 
 import java.security.*;
 import java.util.Base64;

@@ -1,9 +1,9 @@
-package com.ledger.gui;
+package ledger.gui;
 
 import javax.swing.*;
 
-import com.ledger.blockchain.Block;
-import com.ledger.blockchain.Blockchain;
+import ledger.blockchain.Block;
+import ledger.blockchain.Blockchain;
 
 import java.awt.*;
 

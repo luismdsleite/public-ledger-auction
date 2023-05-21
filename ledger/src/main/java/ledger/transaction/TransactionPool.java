@@ -1,4 +1,4 @@
-package com.ledger.transaction;
+package ledger.transaction;
 
 import java.util.ArrayList;
 import java.util.List;

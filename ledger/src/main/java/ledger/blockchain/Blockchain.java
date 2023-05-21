@@ -1,9 +1,9 @@
-package com.ledger.blockchain;
+package ledger.blockchain;
 
 import java.util.ArrayList;
 import java.util.List;
 
-// import com.ledger.transaction.Transaction;
+// import ledger.transaction.Transaction;
 
 public class Blockchain {
     private int difficulty;

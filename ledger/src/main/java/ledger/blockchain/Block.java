@@ -1,4 +1,4 @@
-package com.ledger.blockchain;
+package ledger.blockchain;
 
 // import java.io.UnsupportedEncodingException;
 // import java.security.MessageDigest;
@@ -6,8 +6,8 @@ package com.ledger.blockchain;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.ledger.consensus.ProofOfWork;
-import com.ledger.transaction.Transaction;
+import ledger.consensus.ProofOfWork;
+import ledger.transaction.Transaction;
 
 public class Block {
     private int index;

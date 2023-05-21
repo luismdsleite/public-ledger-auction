@@ -1,4 +1,4 @@
-package com.ledger;
+package ledger;
 
 // import java.awt.BorderLayout;
 // import java.io.IOException;
@@ -9,16 +9,16 @@ import java.util.Arrays;
 // import javax.swing.BoxLayout;
 // import javax.swing.JPanel;
 
-import com.ledger.blockchain.Block;
-import com.ledger.blockchain.Blockchain;
-// import com.ledger.gui.BlockPanel;
-// import com.ledger.gui.BlockchainGUI;
-import com.ledger.transaction.Transaction;
-import com.ledger.wallet.WalletAddressGenerator;
+import ledger.blockchain.Block;
+import ledger.blockchain.Blockchain;
+// import ledger.gui.BlockPanel;
+// import ledger.gui.BlockchainGUI;
+import ledger.transaction.Transaction;
+import ledger.wallet.WalletAddressGenerator;
 
 import java.security.*;
 
-import com.ledger.security.RSASignatureUtils;
+import ledger.security.RSASignatureUtils;
 // import s_kademlia.LaunchNode;
 
 public class Main {
