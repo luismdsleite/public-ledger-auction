@@ -2,6 +2,8 @@ package s_kademlia;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.LinkedList;
