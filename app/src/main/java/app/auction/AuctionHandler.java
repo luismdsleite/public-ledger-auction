@@ -38,7 +38,7 @@ public class AuctionHandler extends Thread {
 
     public Bid updateAuctionBest(String auctionKey) {
 
-        KadStorageValue kadValue = KademliaClient.runGet(kademliaNode, auction.getKey().getBytes());
+        KadStorageValue kadValue = KademliaClient.runGet(kademliaNode, Utils.stringToByte(auction.getKey()));
         
         byte [] auctionBytes = kadValue.getValueBytes();
 

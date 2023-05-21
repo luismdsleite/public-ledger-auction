@@ -6,6 +6,7 @@ import app.utils.Utils;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.util.*;
 import s_kademlia.utils.CryptoHash;
 
@@ -34,9 +35,9 @@ public class Auction {
     }
 
     public byte[] getValue() {
-        String key = this.getProduct() + "_" + this.getStartPrice() + "_" + Utils.formatDate(this.getStartDate()) + "_" + Utils.formatDate(this.getEndDate());
+        String key = this.getProduct() + "_" + this.getSeller()+"_"+ this.getStartPrice() + "_" + Utils.formatDate(this.getStartDate()) + "_" + Utils.formatDate(this.getEndDate());
         if(this.bestBid != null) {
-            key = key + "_" + bestBid.getBuyer() + "_" + bestBid.getAmount();
+            key = key + "_" + bestBid.getSeller() + "_" + bestBid.getBuyer() + "_" + bestBid.getAmount();
         }
         return key.getBytes();
     }
