@@ -1414,12 +1414,17 @@ public final class NodeAPI {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional bytes value = 1;</code>
+     * <code>optional bytes key = 1;</code>
+     */
+    com.google.protobuf.ByteString getKey();
+
+    /**
+     * <code>optional bytes value = 2;</code>
      */
     com.google.protobuf.ByteString getValue();
 
     /**
-     * <code>optional int64 timestamp = 2;</code>
+     * <code>optional int64 timestamp = 3;</code>
      */
     long getTimestamp();
   }
@@ -1435,6 +1440,7 @@ public final class NodeAPI {
       super(builder);
     }
     private StoreRequest() {
+      key_ = com.google.protobuf.ByteString.EMPTY;
       value_ = com.google.protobuf.ByteString.EMPTY;
       timestamp_ = 0L;
     }
@@ -1466,10 +1472,15 @@ public final class NodeAPI {
             }
             case 10: {
 
+              key_ = input.readBytes();
+              break;
+            }
+            case 18: {
+
               value_ = input.readBytes();
               break;
             }
-            case 16: {
+            case 24: {
 
               timestamp_ = input.readInt64();
               break;
@@ -1497,19 +1508,28 @@ public final class NodeAPI {
               generated.NodeAPI.StoreRequest.class, generated.NodeAPI.StoreRequest.Builder.class);
     }
 
-    public static final int VALUE_FIELD_NUMBER = 1;
+    public static final int KEY_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString key_;
+    /**
+     * <code>optional bytes key = 1;</code>
+     */
+    public com.google.protobuf.ByteString getKey() {
+      return key_;
+    }
+
+    public static final int VALUE_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString value_;
     /**
-     * <code>optional bytes value = 1;</code>
+     * <code>optional bytes value = 2;</code>
      */
     public com.google.protobuf.ByteString getValue() {
       return value_;
     }
 
-    public static final int TIMESTAMP_FIELD_NUMBER = 2;
+    public static final int TIMESTAMP_FIELD_NUMBER = 3;
     private long timestamp_;
     /**
-     * <code>optional int64 timestamp = 2;</code>
+     * <code>optional int64 timestamp = 3;</code>
      */
     public long getTimestamp() {
       return timestamp_;
@@ -1527,11 +1547,14 @@ public final class NodeAPI {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      if (!key_.isEmpty()) {
+        output.writeBytes(1, key_);
+      }
       if (!value_.isEmpty()) {
-        output.writeBytes(1, value_);
+        output.writeBytes(2, value_);
       }
       if (timestamp_ != 0L) {
-        output.writeInt64(2, timestamp_);
+        output.writeInt64(3, timestamp_);
       }
     }
 
@@ -1540,13 +1563,17 @@ public final class NodeAPI {
       if (size != -1) return size;
 
       size = 0;
+      if (!key_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, key_);
+      }
       if (!value_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, value_);
+          .computeBytesSize(2, value_);
       }
       if (timestamp_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, timestamp_);
+          .computeInt64Size(3, timestamp_);
       }
       memoizedSize = size;
       return size;
@@ -1564,6 +1591,8 @@ public final class NodeAPI {
       generated.NodeAPI.StoreRequest other = (generated.NodeAPI.StoreRequest) obj;
 
       boolean result = true;
+      result = result && getKey()
+          .equals(other.getKey());
       result = result && getValue()
           .equals(other.getValue());
       result = result && (getTimestamp()
@@ -1578,6 +1607,8 @@ public final class NodeAPI {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptorForType().hashCode();
+      hash = (37 * hash) + KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getKey().hashCode();
       hash = (37 * hash) + VALUE_FIELD_NUMBER;
       hash = (53 * hash) + getValue().hashCode();
       hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
@@ -1701,6 +1732,8 @@ public final class NodeAPI {
       }
       public Builder clear() {
         super.clear();
+        key_ = com.google.protobuf.ByteString.EMPTY;
+
         value_ = com.google.protobuf.ByteString.EMPTY;
 
         timestamp_ = 0L;
@@ -1727,6 +1760,7 @@ public final class NodeAPI {
 
       public generated.NodeAPI.StoreRequest buildPartial() {
         generated.NodeAPI.StoreRequest result = new generated.NodeAPI.StoreRequest(this);
+        result.key_ = key_;
         result.value_ = value_;
         result.timestamp_ = timestamp_;
         onBuilt();
@@ -1770,6 +1804,9 @@ public final class NodeAPI {
 
       public Builder mergeFrom(generated.NodeAPI.StoreRequest other) {
         if (other == generated.NodeAPI.StoreRequest.getDefaultInstance()) return this;
+        if (other.getKey() != com.google.protobuf.ByteString.EMPTY) {
+          setKey(other.getKey());
+        }
         if (other.getValue() != com.google.protobuf.ByteString.EMPTY) {
           setValue(other.getValue());
         }
@@ -1802,15 +1839,44 @@ public final class NodeAPI {
         return this;
       }
 
+      private com.google.protobuf.ByteString key_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes key = 1;</code>
+       */
+      public com.google.protobuf.ByteString getKey() {
+        return key_;
+      }
+      /**
+       * <code>optional bytes key = 1;</code>
+       */
+      public Builder setKey(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        key_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes key = 1;</code>
+       */
+      public Builder clearKey() {
+        
+        key_ = getDefaultInstance().getKey();
+        onChanged();
+        return this;
+      }
+
       private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes value = 1;</code>
+       * <code>optional bytes value = 2;</code>
        */
       public com.google.protobuf.ByteString getValue() {
         return value_;
       }
       /**
-       * <code>optional bytes value = 1;</code>
+       * <code>optional bytes value = 2;</code>
        */
       public Builder setValue(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -1822,7 +1888,7 @@ public final class NodeAPI {
         return this;
       }
       /**
-       * <code>optional bytes value = 1;</code>
+       * <code>optional bytes value = 2;</code>
        */
       public Builder clearValue() {
         
@@ -1833,13 +1899,13 @@ public final class NodeAPI {
 
       private long timestamp_ ;
       /**
-       * <code>optional int64 timestamp = 2;</code>
+       * <code>optional int64 timestamp = 3;</code>
        */
       public long getTimestamp() {
         return timestamp_;
       }
       /**
-       * <code>optional int64 timestamp = 2;</code>
+       * <code>optional int64 timestamp = 3;</code>
        */
       public Builder setTimestamp(long value) {
         
@@ -1848,7 +1914,7 @@ public final class NodeAPI {
         return this;
       }
       /**
-       * <code>optional int64 timestamp = 2;</code>
+       * <code>optional int64 timestamp = 3;</code>
        */
       public Builder clearTimestamp() {
         
@@ -2465,6 +2531,998 @@ public final class NodeAPI {
 
   }
 
+  public interface FindRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.FindRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional bytes key = 1;</code>
+     */
+    com.google.protobuf.ByteString getKey();
+  }
+  /**
+   * Protobuf type {@code proto.FindRequest}
+   */
+  public  static final class FindRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:proto.FindRequest)
+      FindRequestOrBuilder {
+    // Use FindRequest.newBuilder() to construct.
+    private FindRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private FindRequest() {
+      key_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    }
+    private FindRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!input.skipField(tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+
+              key_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return generated.NodeAPI.internal_static_proto_FindRequest_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return generated.NodeAPI.internal_static_proto_FindRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              generated.NodeAPI.FindRequest.class, generated.NodeAPI.FindRequest.Builder.class);
+    }
+
+    public static final int KEY_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString key_;
+    /**
+     * <code>optional bytes key = 1;</code>
+     */
+    public com.google.protobuf.ByteString getKey() {
+      return key_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!key_.isEmpty()) {
+        output.writeBytes(1, key_);
+      }
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!key_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, key_);
+      }
+      memoizedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof generated.NodeAPI.FindRequest)) {
+        return super.equals(obj);
+      }
+      generated.NodeAPI.FindRequest other = (generated.NodeAPI.FindRequest) obj;
+
+      boolean result = true;
+      result = result && getKey()
+          .equals(other.getKey());
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      hash = (37 * hash) + KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getKey().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static generated.NodeAPI.FindRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static generated.NodeAPI.FindRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static generated.NodeAPI.FindRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static generated.NodeAPI.FindRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static generated.NodeAPI.FindRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static generated.NodeAPI.FindRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static generated.NodeAPI.FindRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static generated.NodeAPI.FindRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static generated.NodeAPI.FindRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static generated.NodeAPI.FindRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(generated.NodeAPI.FindRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.FindRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.FindRequest)
+        generated.NodeAPI.FindRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return generated.NodeAPI.internal_static_proto_FindRequest_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return generated.NodeAPI.internal_static_proto_FindRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                generated.NodeAPI.FindRequest.class, generated.NodeAPI.FindRequest.Builder.class);
+      }
+
+      // Construct using generated.NodeAPI.FindRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        key_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return generated.NodeAPI.internal_static_proto_FindRequest_descriptor;
+      }
+
+      public generated.NodeAPI.FindRequest getDefaultInstanceForType() {
+        return generated.NodeAPI.FindRequest.getDefaultInstance();
+      }
+
+      public generated.NodeAPI.FindRequest build() {
+        generated.NodeAPI.FindRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public generated.NodeAPI.FindRequest buildPartial() {
+        generated.NodeAPI.FindRequest result = new generated.NodeAPI.FindRequest(this);
+        result.key_ = key_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof generated.NodeAPI.FindRequest) {
+          return mergeFrom((generated.NodeAPI.FindRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(generated.NodeAPI.FindRequest other) {
+        if (other == generated.NodeAPI.FindRequest.getDefaultInstance()) return this;
+        if (other.getKey() != com.google.protobuf.ByteString.EMPTY) {
+          setKey(other.getKey());
+        }
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        generated.NodeAPI.FindRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (generated.NodeAPI.FindRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private com.google.protobuf.ByteString key_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes key = 1;</code>
+       */
+      public com.google.protobuf.ByteString getKey() {
+        return key_;
+      }
+      /**
+       * <code>optional bytes key = 1;</code>
+       */
+      public Builder setKey(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        key_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes key = 1;</code>
+       */
+      public Builder clearKey() {
+        
+        key_ = getDefaultInstance().getKey();
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:proto.FindRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.FindRequest)
+    private static final generated.NodeAPI.FindRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new generated.NodeAPI.FindRequest();
+    }
+
+    public static generated.NodeAPI.FindRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<FindRequest>
+        PARSER = new com.google.protobuf.AbstractParser<FindRequest>() {
+      public FindRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new FindRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<FindRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<FindRequest> getParserForType() {
+      return PARSER;
+    }
+
+    public generated.NodeAPI.FindRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface FindResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.FindResponse)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional bytes value = 1;</code>
+     */
+    com.google.protobuf.ByteString getValue();
+
+    /**
+     * <code>optional int64 timestamp = 2;</code>
+     */
+    long getTimestamp();
+
+    /**
+     * <code>optional bool success = 3;</code>
+     */
+    boolean getSuccess();
+  }
+  /**
+   * Protobuf type {@code proto.FindResponse}
+   */
+  public  static final class FindResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:proto.FindResponse)
+      FindResponseOrBuilder {
+    // Use FindResponse.newBuilder() to construct.
+    private FindResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private FindResponse() {
+      value_ = com.google.protobuf.ByteString.EMPTY;
+      timestamp_ = 0L;
+      success_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    }
+    private FindResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!input.skipField(tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+
+              value_ = input.readBytes();
+              break;
+            }
+            case 16: {
+
+              timestamp_ = input.readInt64();
+              break;
+            }
+            case 24: {
+
+              success_ = input.readBool();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return generated.NodeAPI.internal_static_proto_FindResponse_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return generated.NodeAPI.internal_static_proto_FindResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              generated.NodeAPI.FindResponse.class, generated.NodeAPI.FindResponse.Builder.class);
+    }
+
+    public static final int VALUE_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString value_;
+    /**
+     * <code>optional bytes value = 1;</code>
+     */
+    public com.google.protobuf.ByteString getValue() {
+      return value_;
+    }
+
+    public static final int TIMESTAMP_FIELD_NUMBER = 2;
+    private long timestamp_;
+    /**
+     * <code>optional int64 timestamp = 2;</code>
+     */
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
+    public static final int SUCCESS_FIELD_NUMBER = 3;
+    private boolean success_;
+    /**
+     * <code>optional bool success = 3;</code>
+     */
+    public boolean getSuccess() {
+      return success_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!value_.isEmpty()) {
+        output.writeBytes(1, value_);
+      }
+      if (timestamp_ != 0L) {
+        output.writeInt64(2, timestamp_);
+      }
+      if (success_ != false) {
+        output.writeBool(3, success_);
+      }
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!value_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, value_);
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, timestamp_);
+      }
+      if (success_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, success_);
+      }
+      memoizedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof generated.NodeAPI.FindResponse)) {
+        return super.equals(obj);
+      }
+      generated.NodeAPI.FindResponse other = (generated.NodeAPI.FindResponse) obj;
+
+      boolean result = true;
+      result = result && getValue()
+          .equals(other.getValue());
+      result = result && (getTimestamp()
+          == other.getTimestamp());
+      result = result && (getSuccess()
+          == other.getSuccess());
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      hash = (37 * hash) + VALUE_FIELD_NUMBER;
+      hash = (53 * hash) + getValue().hashCode();
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
+      hash = (37 * hash) + SUCCESS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getSuccess());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static generated.NodeAPI.FindResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static generated.NodeAPI.FindResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static generated.NodeAPI.FindResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static generated.NodeAPI.FindResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static generated.NodeAPI.FindResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static generated.NodeAPI.FindResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static generated.NodeAPI.FindResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static generated.NodeAPI.FindResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static generated.NodeAPI.FindResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static generated.NodeAPI.FindResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(generated.NodeAPI.FindResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.FindResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.FindResponse)
+        generated.NodeAPI.FindResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return generated.NodeAPI.internal_static_proto_FindResponse_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return generated.NodeAPI.internal_static_proto_FindResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                generated.NodeAPI.FindResponse.class, generated.NodeAPI.FindResponse.Builder.class);
+      }
+
+      // Construct using generated.NodeAPI.FindResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        value_ = com.google.protobuf.ByteString.EMPTY;
+
+        timestamp_ = 0L;
+
+        success_ = false;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return generated.NodeAPI.internal_static_proto_FindResponse_descriptor;
+      }
+
+      public generated.NodeAPI.FindResponse getDefaultInstanceForType() {
+        return generated.NodeAPI.FindResponse.getDefaultInstance();
+      }
+
+      public generated.NodeAPI.FindResponse build() {
+        generated.NodeAPI.FindResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public generated.NodeAPI.FindResponse buildPartial() {
+        generated.NodeAPI.FindResponse result = new generated.NodeAPI.FindResponse(this);
+        result.value_ = value_;
+        result.timestamp_ = timestamp_;
+        result.success_ = success_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof generated.NodeAPI.FindResponse) {
+          return mergeFrom((generated.NodeAPI.FindResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(generated.NodeAPI.FindResponse other) {
+        if (other == generated.NodeAPI.FindResponse.getDefaultInstance()) return this;
+        if (other.getValue() != com.google.protobuf.ByteString.EMPTY) {
+          setValue(other.getValue());
+        }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
+        }
+        if (other.getSuccess() != false) {
+          setSuccess(other.getSuccess());
+        }
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        generated.NodeAPI.FindResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (generated.NodeAPI.FindResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes value = 1;</code>
+       */
+      public com.google.protobuf.ByteString getValue() {
+        return value_;
+      }
+      /**
+       * <code>optional bytes value = 1;</code>
+       */
+      public Builder setValue(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes value = 1;</code>
+       */
+      public Builder clearValue() {
+        
+        value_ = getDefaultInstance().getValue();
+        onChanged();
+        return this;
+      }
+
+      private long timestamp_ ;
+      /**
+       * <code>optional int64 timestamp = 2;</code>
+       */
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>optional int64 timestamp = 2;</code>
+       */
+      public Builder setTimestamp(long value) {
+        
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 timestamp = 2;</code>
+       */
+      public Builder clearTimestamp() {
+        
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private boolean success_ ;
+      /**
+       * <code>optional bool success = 3;</code>
+       */
+      public boolean getSuccess() {
+        return success_;
+      }
+      /**
+       * <code>optional bool success = 3;</code>
+       */
+      public Builder setSuccess(boolean value) {
+        
+        success_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool success = 3;</code>
+       */
+      public Builder clearSuccess() {
+        
+        success_ = false;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:proto.FindResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.FindResponse)
+    private static final generated.NodeAPI.FindResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new generated.NodeAPI.FindResponse();
+    }
+
+    public static generated.NodeAPI.FindResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<FindResponse>
+        PARSER = new com.google.protobuf.AbstractParser<FindResponse>() {
+      public FindResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new FindResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<FindResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<FindResponse> getParserForType() {
+      return PARSER;
+    }
+
+    public generated.NodeAPI.FindResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_NodeProto_descriptor;
   private static final 
@@ -2485,6 +3543,16 @@ public final class NodeAPI {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_proto_StoreResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_FindRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_proto_FindRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_FindResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_proto_FindResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -2497,14 +3565,18 @@ public final class NodeAPI {
       "\n\rNodeAPI.proto\022\005proto\"8\n\tNodeProto\022\n\n\002i" +
       "p\030\001 \001(\t\022\014\n\004port\030\002 \001(\005\022\021\n\tpublicKey\030\003 \001(\014" +
       "\"-\n\nNodesClose\022\037\n\005nodes\030\001 \003(\0132\020.proto.No" +
-      "deProto\"0\n\014StoreRequest\022\r\n\005value\030\001 \001(\014\022\021" +
-      "\n\ttimestamp\030\002 \001(\003\"@\n\rStoreResponse\022\013\n\003ke" +
-      "y\030\001 \001(\014\022\021\n\ttimestamp\030\002 \001(\003\022\017\n\007success\030\003 " +
-      "\001(\0102\232\001\n\007nodeAPI\022/\n\010findNode\022\020.proto.Node" +
-      "Proto\032\021.proto.NodesClose\022*\n\004ping\022\020.proto" +
-      ".NodeProto\032\020.proto.NodeProto\0222\n\005store\022\023." +
-      "proto.StoreRequest\032\024.proto.StoreResponse",
-      "B\013\n\tgeneratedb\006proto3"
+      "deProto\"=\n\014StoreRequest\022\013\n\003key\030\001 \001(\014\022\r\n\005" +
+      "value\030\002 \001(\014\022\021\n\ttimestamp\030\003 \001(\003\"@\n\rStoreR" +
+      "esponse\022\013\n\003key\030\001 \001(\014\022\021\n\ttimestamp\030\002 \001(\003\022" +
+      "\017\n\007success\030\003 \001(\010\"\032\n\013FindRequest\022\013\n\003key\030\001" +
+      " \001(\014\"A\n\014FindResponse\022\r\n\005value\030\001 \001(\014\022\021\n\tt" +
+      "imestamp\030\002 \001(\003\022\017\n\007success\030\003 \001(\0102\320\001\n\007node" +
+      "API\022/\n\010findNode\022\020.proto.NodeProto\032\021.prot",
+      "o.NodesClose\022*\n\004ping\022\020.proto.NodeProto\032\020" +
+      ".proto.NodeProto\0222\n\005store\022\023.proto.StoreR" +
+      "equest\032\024.proto.StoreResponse\0224\n\tfindValu" +
+      "e\022\022.proto.FindRequest\032\023.proto.FindRespon" +
+      "seB\013\n\tgeneratedb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2535,13 +3607,25 @@ public final class NodeAPI {
     internal_static_proto_StoreRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_StoreRequest_descriptor,
-        new java.lang.String[] { "Value", "Timestamp", });
+        new java.lang.String[] { "Key", "Value", "Timestamp", });
     internal_static_proto_StoreResponse_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_proto_StoreResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_StoreResponse_descriptor,
         new java.lang.String[] { "Key", "Timestamp", "Success", });
+    internal_static_proto_FindRequest_descriptor =
+      getDescriptor().getMessageTypes().get(4);
+    internal_static_proto_FindRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_proto_FindRequest_descriptor,
+        new java.lang.String[] { "Key", });
+    internal_static_proto_FindResponse_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_proto_FindResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_proto_FindResponse_descriptor,
+        new java.lang.String[] { "Value", "Timestamp", "Success", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

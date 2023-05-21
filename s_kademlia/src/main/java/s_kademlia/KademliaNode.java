@@ -65,7 +65,7 @@ public class KademliaNode extends nodeAPIImplBase {
         Node bootstrapNode = new Node(bootstrapName, bootstrapPort);
         this.bootstrap(bootstrapNode);
     }
-
+    
     /**
      * Joins a network via the Bootstrap Node
      * 
@@ -78,10 +78,10 @@ public class KademliaNode extends nodeAPIImplBase {
         // Establish a Channel with the bootstrap node and execute a
         // FIND_NODE(MY_NODE_ID), this will return a list of the K closest nodes.
         ManagedChannel channel = ManagedChannelBuilder.forAddress(bootstrapNode.getName(), bootstrapNode.getPort())
-                .usePlaintext()
-                .build();
+        .usePlaintext()
+        .build();
         logger.info("Created Channel with Bootstrap Node " + channel + " to " + bootstrapNode.getName() + ":"
-                + bootstrapNode.getPort());
+        + bootstrapNode.getPort());
         var stub = nodeAPIGrpc.newBlockingStub(channel);
         NodeProto nodeProto = KademliaUtils.nodeToNodeProto(this.localNode);
 
@@ -99,18 +99,18 @@ public class KademliaNode extends nodeAPIImplBase {
                 logger.severe("Error: Could not find hash" + KademliaUtils.HASH_ALGO);
                 e.printStackTrace();
             }
-
+            
         }
-
+        
         logger.info("Received bootstrap findNode response, contacting closest nodes");
         // After the FIND_NODE call to the bootstrap node, we contact our K closests
         // nodes with a FIND_NODE(MY_NODE_ID).
         for (Node neigh : closestToAsk) {
             if (neigh.equals(this.getNode()))
-                continue; // Skip self
+            continue; // Skip self
             channel = ManagedChannelBuilder.forAddress(neigh.getName(), neigh.getPort())
-                    .usePlaintext()
-                    .build();
+            .usePlaintext()
+            .build();
             stub = nodeAPIGrpc.newBlockingStub(channel);
             nodeProto = KademliaUtils.nodeToNodeProto(this.localNode);
             for (NodeProto neighProto : response.getNodesList()) {
@@ -129,6 +129,14 @@ public class KademliaNode extends nodeAPIImplBase {
 
         logger.info("Bootstrap complete, obtain the following nodes" + routingTable);
     }
+    
+    public Node getNode() {
+        return localNode;
+    }
+    
+    public byte[] getPvtKeyBytes(){
+        return this.getNode().getNodeID().getPvtKeyBytes();
+    }
 
     // Returning the K nodes closest to the requested node.
     @Override
@@ -138,15 +146,13 @@ public class KademliaNode extends nodeAPIImplBase {
         try {
             var n = KademliaUtils.nodeProtoToNode(request);
             routingTable.insert(n);
-
+            
             var neighbors = routingTable.findClosest(n.getNodeID(), KademliaUtils.K);
             for (var neigh : neighbors) {
                 logger.info("Neighbor(" + neigh + ")");
                 nodesClose.add(KademliaUtils.nodeToNodeProto(neigh));
                 // nodesCloseBuilder.addNodes(KademliaUtils.nodeToNodeProto(neigh));
             }
-
-            // responseObserver.onNext(nodesCloseBuilder.build());
         } catch (NoSuchAlgorithmException e) {
             logger.severe("Error: Could not find algorithm" + KademliaUtils.CRYPTO_ALGO);
             e.printStackTrace();
@@ -173,9 +179,6 @@ public class KademliaNode extends nodeAPIImplBase {
         responseObserver.onCompleted();
     }
 
-    public Node getNode() {
-        return localNode;
-    }
 
     /**
      * Store a value in the network. Does not check if the key really belongs to it.
@@ -184,24 +187,46 @@ public class KademliaNode extends nodeAPIImplBase {
     public void store(StoreRequest request, StreamObserver<StoreResponse> responseObserver) {
         logger.info("Received Store Request from:" + request);
         StoreRequest storeRequest = StoreRequest.newBuilder().build();
+        // Retrieve timestamp and value from the request.
+        var key = new BigInteger(1, request.getKey().toByteArray());
         var timestamp = request.getTimestamp();
         var value = storeRequest.getValue().toByteArray();
         var kadValue = new KadStorageValue(new BigInteger(1, value), timestamp);
 
-        try {
-            var key = CryptoHash.toSha256(value);
-            boolean result = storageManager.put(key, kadValue);
-            StoreResponse storeResponse = StoreResponse.newBuilder()
-                    .setTimestamp(timestamp)
-                    .setKey(ByteString.copyFrom(key.toByteArray()))
-                    .setSuccess(result)
-                    .build();
-            responseObserver.onNext(storeResponse);
-        } catch (NoSuchAlgorithmException e) {
-            logger.severe("Error: Could not find algorithm" + KademliaUtils.CRYPTO_ALGO);
-            e.printStackTrace();
-        }
+        boolean result = storageManager.put(key, kadValue);
+        // Return the response.
+        StoreResponse storeResponse = StoreResponse.newBuilder()
+                .setTimestamp(timestamp)
+                .setKey(ByteString.copyFrom(key.toByteArray()))
+                .setSuccess(result)
+                .build();
+        responseObserver.onNext(storeResponse);
 
+        responseObserver.onCompleted();
+    }
+
+    /**
+     * Find a value in the network. Does not check if the key really belongs to it.
+     */
+    @Override
+    public void findValue(FindRequest request, StreamObserver<FindResponse> responseObserver) {
+        var key = new BigInteger(1, request.getKey().toByteArray());
+        var value = storageManager.get(key);
+        logger.info("FIND_VALUE: " + key + " " + value);
+        FindResponse findResponse;
+        if (value != null) {
+            findResponse = FindResponse.newBuilder()
+                    .setValue(ByteString.copyFrom(value.getValueBytes()))
+                    .setTimestamp(value.getTimestamp())
+                    .setSuccess(true)
+                    .build();
+        } else {
+            findResponse = FindResponse.newBuilder()
+                    .setSuccess(false)
+                    .build();
+
+        }
+        responseObserver.onNext(findResponse);
         responseObserver.onCompleted();
     }
 

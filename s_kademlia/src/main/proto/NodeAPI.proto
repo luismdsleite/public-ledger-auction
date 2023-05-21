@@ -7,6 +7,7 @@ service nodeAPI{
     rpc findNode(NodeProto) returns (NodesClose);
     rpc ping(NodeProto) returns (NodeProto);
     rpc store(StoreRequest) returns (StoreResponse);
+    rpc findValue(FindRequest) returns (FindResponse);
 }
 
 // Named NodeProto to not mistake with the class s_kademlia.node.Node.
@@ -21,12 +22,23 @@ message NodesClose{
 }
 
 message StoreRequest{
-    bytes value = 1;
-    int64 timestamp = 2;
+    bytes key = 1;
+    bytes value = 2;
+    int64 timestamp = 3;
 }
 
 message StoreResponse{
     bytes key = 1;
+    int64 timestamp = 2;
+    bool success = 3;
+}
+
+message FindRequest{
+    bytes key = 1;
+}
+
+message FindResponse{
+    bytes value = 1;
     int64 timestamp = 2;
     bool success = 3;
 }

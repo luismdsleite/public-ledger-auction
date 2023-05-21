@@ -57,6 +57,10 @@ public class KademliaID implements Comparable<KademliaID> {
         return this.pubKey.getEncoded();
     }
 
+    public byte[] getPvtKeyBytes() {
+        return this.prvKey.getEncoded();
+    }
+
     /**
      * @return The BigInteger representation of the public key
      */

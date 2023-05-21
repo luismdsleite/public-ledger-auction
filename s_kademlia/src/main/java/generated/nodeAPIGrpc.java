@@ -111,6 +111,37 @@ public final class nodeAPIGrpc {
     return getStoreMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<generated.NodeAPI.FindRequest,
+      generated.NodeAPI.FindResponse> getFindValueMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "findValue",
+      requestType = generated.NodeAPI.FindRequest.class,
+      responseType = generated.NodeAPI.FindResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.NodeAPI.FindRequest,
+      generated.NodeAPI.FindResponse> getFindValueMethod() {
+    io.grpc.MethodDescriptor<generated.NodeAPI.FindRequest, generated.NodeAPI.FindResponse> getFindValueMethod;
+    if ((getFindValueMethod = nodeAPIGrpc.getFindValueMethod) == null) {
+      synchronized (nodeAPIGrpc.class) {
+        if ((getFindValueMethod = nodeAPIGrpc.getFindValueMethod) == null) {
+          nodeAPIGrpc.getFindValueMethod = getFindValueMethod =
+              io.grpc.MethodDescriptor.<generated.NodeAPI.FindRequest, generated.NodeAPI.FindResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "findValue"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.NodeAPI.FindRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.NodeAPI.FindResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new nodeAPIMethodDescriptorSupplier("findValue"))
+              .build();
+        }
+      }
+    }
+    return getFindValueMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -183,6 +214,13 @@ public final class nodeAPIGrpc {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getStoreMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void findValue(generated.NodeAPI.FindRequest request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.FindResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getFindValueMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -206,6 +244,13 @@ public final class nodeAPIGrpc {
                 generated.NodeAPI.StoreRequest,
                 generated.NodeAPI.StoreResponse>(
                   this, METHODID_STORE)))
+          .addMethod(
+            getFindValueMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                generated.NodeAPI.FindRequest,
+                generated.NodeAPI.FindResponse>(
+                  this, METHODID_FIND_VALUE)))
           .build();
     }
   }
@@ -250,6 +295,14 @@ public final class nodeAPIGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getStoreMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void findValue(generated.NodeAPI.FindRequest request,
+        io.grpc.stub.StreamObserver<generated.NodeAPI.FindResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getFindValueMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -288,6 +341,13 @@ public final class nodeAPIGrpc {
     public generated.NodeAPI.StoreResponse store(generated.NodeAPI.StoreRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getStoreMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public generated.NodeAPI.FindResponse findValue(generated.NodeAPI.FindRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getFindValueMethod(), getCallOptions(), request);
     }
   }
 
@@ -331,11 +391,20 @@ public final class nodeAPIGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getStoreMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.NodeAPI.FindResponse> findValue(
+        generated.NodeAPI.FindRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getFindValueMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_FIND_NODE = 0;
   private static final int METHODID_PING = 1;
   private static final int METHODID_STORE = 2;
+  private static final int METHODID_FIND_VALUE = 3;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -365,6 +434,10 @@ public final class nodeAPIGrpc {
         case METHODID_STORE:
           serviceImpl.store((generated.NodeAPI.StoreRequest) request,
               (io.grpc.stub.StreamObserver<generated.NodeAPI.StoreResponse>) responseObserver);
+          break;
+        case METHODID_FIND_VALUE:
+          serviceImpl.findValue((generated.NodeAPI.FindRequest) request,
+              (io.grpc.stub.StreamObserver<generated.NodeAPI.FindResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -430,6 +503,7 @@ public final class nodeAPIGrpc {
               .addMethod(getFindNodeMethod())
               .addMethod(getPingMethod())
               .addMethod(getStoreMethod())
+              .addMethod(getFindValueMethod())
               .build();
         }
       }
