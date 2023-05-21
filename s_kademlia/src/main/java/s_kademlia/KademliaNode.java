@@ -134,7 +134,7 @@ public class KademliaNode extends nodeAPIImplBase {
                 logger.severe("Error: Could not find hash" + KademliaUtils.HASH_ALGO);
                 e.printStackTrace();
             }
-
+            channel.shutdown();
         }
 
         logger.info("Received bootstrap findNode response, contacting closest nodes");
@@ -454,7 +454,6 @@ public class KademliaNode extends nodeAPIImplBase {
 
     @Override
     public void put(PutRequest request, StreamObserver<PutResponse> responseObserver) {
-        var valString = request.getValue();
         var kadID = new BigInteger(1, request.getKey().toByteArray());
         var value = new BigInteger(1, request.getValue().toByteArray());
         var timestamp = request.getTimestamp();
