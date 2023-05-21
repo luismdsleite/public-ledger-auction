@@ -23,7 +23,7 @@ public class KademliaClient {
     /**
      * Execute a GET rpc call to a node.
      */
-    private static KadStorageValue runGet(Node node, byte[] key)
+    public static KadStorageValue runGet(Node node, byte[] key)
             throws StatusRuntimeException {
         var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
@@ -41,7 +41,7 @@ public class KademliaClient {
     /**
      * Execute a PUT rpc call to a node.
      */
-    private static boolean runPut(Node node, byte[] key, KadStorageValue value)
+    public static boolean runPut(Node node, byte[] key, KadStorageValue value)
             throws StatusRuntimeException {
         var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
