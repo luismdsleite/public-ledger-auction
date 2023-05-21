@@ -13,6 +13,7 @@ public class KademliaUtils {
     public static final int RPC_CALL_TIMEOUT = 10000;
     public static final int MAX_RETRIES = 3;
     public static final int STATIC_PUZZLE_ZEROS = 2;
+    public static final long PERIODIC_PING_INTERVAL = 30000;
     public static Node nodeProtoToNode(NodeProto n) throws NoSuchAlgorithmException, InvalidKeySpecException {
         return new Node(n.getPublicKey().toByteArray(), n.getIp(), n.getPort());
     }

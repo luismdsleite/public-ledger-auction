@@ -12,8 +12,10 @@ import com.google.protobuf.ByteString;
 
 import generated.NodeAPI.GetRequest;
 import generated.NodeAPI.GetResponse;
+import generated.NodeAPI.NodeProto;
 import generated.NodeAPI.PutRequest;
 import generated.NodeAPI.PutResponse;
+import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import s_kademlia.node.Node;
@@ -67,24 +69,48 @@ public class KademliaClient {
                 return response.getSuccess();
         }
 
+        public static boolean doPing(Node node) throws StatusRuntimeException {
+                ManagedChannel channel;
+                try {
+                        channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
+                                        .usePlaintext()
+                                        .build();
+                        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(
+                                        KademliaUtils.RPC_CALL_TIMEOUT,
+                                        TimeUnit.MILLISECONDS);
+
+                        NodeProto request = NodeProto.newBuilder()
+                                        .setIp(node.getName())
+                                        .setPort(node.getPort())
+                                        .setPublicKey(ByteString.copyFrom(node.getNodeID().getPubKeyBytes()))
+                                        .build();
+                        NodeProto response = stub.ping(request);
+                        channel.shutdown();
+                        return true;
+                } catch (Exception e) {
+                        return false;
+                }
+        }
+
         public static void main(String[] args)
-                        throws NumberFormatException, StatusRuntimeException, NoSuchAlgorithmException, UnsupportedEncodingException {
+                        throws NumberFormatException, StatusRuntimeException, NoSuchAlgorithmException,
+                        UnsupportedEncodingException {
 
-                // // Generate a random byte array
-                // Random random = new Random(17);
-                // byte[] key = new byte[32];
-                // random.nextBytes(key);
-                
+                // Generate a random byte array
+                Random random = new Random(17);
+                byte[] key = new byte[32];
+                random.nextBytes(key);
+
                 // var entry = new KadStorageValue("Lightweight, LIGHTWEIGHT BABYYYYYY".getBytes(), 12323);
-                
+
                 // runPut(new Node(args[0], Integer.parseInt(args[1])), key, entry);
-                
-                // System.out.println("---------------------------------");
-                
-                // var recEntry = runGet(new Node(args[0], Integer.parseInt(args[1])), key);
 
-                // System.out.println(new String(recEntry.getValueBytes(), "UTF-8"));
+                System.out.println("---------------------------------");
 
-                // System.out.println("FINITO");
+                var recEntry = runGet(new Node(args[0], Integer.parseInt(args[1])), key);
+
+                System.out.println(new String(recEntry.getValueBytes(), "UTF-8"));
+
+                System.out.println("FINITO");
         }
 }

@@ -6,21 +6,28 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import s_kademlia.KademliaClient;
 import s_kademlia.KademliaNode;
 import s_kademlia.node.KademliaID;
 import s_kademlia.node.KeyComparator;
 import s_kademlia.node.Node;
+import s_kademlia.operations.PeriodicPing;
 
 public class RoutingTable {
     public static final Logger logger = Logger.getLogger(RoutingTable.class.getName());
 
     private final Node myNode;
     private transient Bucket[] buckets;
+    private transient Thread periodicPingThread;
 
     public RoutingTable(Node myNode) {
         this.myNode = myNode;
         this.initializeBuckets();
         logger.info("Routing table created for " + myNode);
+
+        PeriodicPing periodicPing = new PeriodicPing(this);
+        periodicPingThread = new Thread(periodicPing);
+        periodicPingThread.start();
 
     }
 
@@ -69,7 +76,7 @@ public class RoutingTable {
         // If i use my own nodeID the index will return -1, this if handles that case.
         if (bIndex < 0)
             bIndex = 0;
-        else if (bIndex > KademliaID.ID_LENGTH-1) {
+        else if (bIndex > KademliaID.ID_LENGTH - 1) {
 
             logger.warning("Bucket index " + bIndex + " out of bounds, returning last bucket" + nid);
             bIndex = KademliaID.ID_LENGTH;
@@ -143,6 +150,23 @@ public class RoutingTable {
     public synchronized void penaltyContact(Node n) {
         Bucket bucket = this.buckets[this.getBucketIndex(n.getNodeID())];
         bucket.penaltyContact(n);
+    }
+
+    public synchronized void pingAll() {
+        for (Bucket b : this.buckets) {
+            for (Contact c : b.getContacts()) {
+                Node n = c.getNode();
+                // If we get a response update the contact
+                if (KademliaClient.doPing(n)) {
+                    b.remove(n);
+                    c.updateLastSeen();
+                    b.insert(c);
+                    System.out.println("Updated contact " + c.getNode());
+                } else { // If we dont get a response, add a penalty
+                    penaltyContact(c.getNode());
+                }
+            }
+        }
     }
 
 }
