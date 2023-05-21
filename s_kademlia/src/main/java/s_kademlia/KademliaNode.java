@@ -134,8 +134,8 @@ public class KademliaNode extends nodeAPIImplBase {
                 logger.severe("Error: Could not find hash" + KademliaUtils.HASH_ALGO);
                 e.printStackTrace();
             }
-            channel.shutdown();
         }
+        channel.shutdown();
 
         logger.info("Received bootstrap findNode response, contacting closest nodes");
         // After the FIND_NODE call to the bootstrap node, we contact our K closests
@@ -160,6 +160,7 @@ public class KademliaNode extends nodeAPIImplBase {
                     e.printStackTrace();
                 }
             }
+            channel.shutdown();
         }
 
         logger.info("Bootstrap complete, routing table:\n" + routingTable);
@@ -279,9 +280,10 @@ public class KademliaNode extends nodeAPIImplBase {
      * @throws StatusRuntimeException
      */
     private NodesClose runFindNode(KademliaID kadID, Node node) throws StatusRuntimeException {
-        var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
+        var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
-                .build()).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+                .build();
+        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
 
         FindNodeRequest findNodeRequest = FindNodeRequest.newBuilder()
                 .setNode(KademliaUtils.nodeToNodeProto(this.localNode))
@@ -289,7 +291,6 @@ public class KademliaNode extends nodeAPIImplBase {
                 .build();
 
         NodesClose response = stub.findNode(findNodeRequest);
-
         for (NodeProto n : response.getNodesList()) {
             try {
                 routingTable.insert(KademliaUtils.nodeProtoToNode(n));
@@ -301,6 +302,7 @@ public class KademliaNode extends nodeAPIImplBase {
                 e.printStackTrace();
             }
         }
+        channel.shutdown();
         return response;
     }
 
@@ -309,16 +311,18 @@ public class KademliaNode extends nodeAPIImplBase {
      */
     private boolean runStore(Node node, KademliaID kadID, KadStorageValue value)
             throws StatusRuntimeException {
-        var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
+        var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
-                .build()).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+                .build();
+        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
         StoreRequest storeRequest = StoreRequest.newBuilder()
                 .setKey(ByteString.copyFrom(kadID.hashBytes()))
                 .setValue(ByteString.copyFrom(value.getValueBytes()))
                 .setTimestamp(value.getTimestamp())
                 .build();
-
+        
         StoreResponse response = stub.store(storeRequest);
+        channel.shutdown();
         return response.getSuccess();
     }
 
@@ -330,9 +334,10 @@ public class KademliaNode extends nodeAPIImplBase {
      * @return
      */
     private KadStorageValue runGet(Node node, KademliaID Key) {
-        var stub = nodeAPIGrpc.newBlockingStub(ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
+        var channel = ManagedChannelBuilder.forAddress(node.getName(), node.getPort())
                 .usePlaintext()
-                .build()).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
+                .build();
+        var stub = nodeAPIGrpc.newBlockingStub(channel).withDeadlineAfter(KademliaUtils.RPC_CALL_TIMEOUT, TimeUnit.MILLISECONDS);
 
         FindRequest findRequest = FindRequest.newBuilder()
                 .setKey(ByteString.copyFrom(Key.hashBytes()))
@@ -340,8 +345,10 @@ public class KademliaNode extends nodeAPIImplBase {
 
         FindResponse response = stub.findValue(findRequest);
         if (response.getSuccess()) {
+            channel.shutdown();
             return new KadStorageValue(new BigInteger(1, response.getValue().toByteArray()), response.getTimestamp());
         } else {
+            channel.shutdown();
             return null;
         }
     }
