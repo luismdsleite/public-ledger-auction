@@ -7,35 +7,33 @@ import java.util.Base64;
 
 public class RSAKeyGenerator {
 
-    private KeyPair keyPair;
+    // private KeyPair keyPair;
 
-    public RSAKeyGenerator() {
-        generateKeyPair();
-    }
+    // public RSAKeyGenerator() {
+    //     generateKeyPair();
+    // }
 
-    private void generateKeyPair() {
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(512); // You can change the key size if needed
-            keyPair = keyPairGenerator.generateKeyPair();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
+    // private void generateKeyPair() {
+    //     try {
+    //         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+    //         keyPairGenerator.initialize(512); // You can change the key size if needed
+    //         keyPair = keyPairGenerator.generateKeyPair();
+    //     } catch (NoSuchAlgorithmException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
-    public String getPublicKey() {
-        PublicKey publicKey = keyPair.getPublic();
+    public static String getPublicKey(PublicKey publicKey) {
         byte[] publicKeyBytes = publicKey.getEncoded();
         return Base64.getEncoder().encodeToString(publicKeyBytes);
     }
 
-    public String getPrivateKey() {
-        PrivateKey privateKey = keyPair.getPrivate();
+    public static String getPrivateKey(PrivateKey privateKey) {
         byte[] privateKeyBytes = privateKey.getEncoded();
         return Base64.getEncoder().encodeToString(privateKeyBytes);
     }
 
-    public String signString(String data, String privateKey) {
+    public static String signString(String data, String privateKey) {
         try {
             byte[] privateKeyBytes = Base64.getDecoder().decode(privateKey);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
@@ -54,7 +52,7 @@ public class RSAKeyGenerator {
         return null;
     }
 
-    public boolean verifyString(String data, String signature, String publicKey) {
+    public static boolean verifyString(String data, String signature, String publicKey) {
         try {
             byte[] publicKeyBytes = Base64.getDecoder().decode(publicKey);
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
