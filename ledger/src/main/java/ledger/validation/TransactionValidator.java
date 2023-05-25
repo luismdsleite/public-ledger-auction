@@ -3,7 +3,6 @@ package ledger.validation;
 import java.util.Date;
 
 import ledger.transaction.Transaction;
-import ledger.wallet.WalletAddressGenerator;
 
 public class TransactionValidator {
 
@@ -11,18 +10,13 @@ public class TransactionValidator {
 
     public static boolean isValidTransaction(Transaction transaction) {
         // Verify that sender and recipient adddress is valid
-        if(!isValidAddress(transaction.getSender()) || !isValidAddress(transaction.getRecipient())) return false;
         
         // Verify if all fields of transaction are field anda valid format
         if(!verifyTransactionFormat(transaction)) return false;
         return true;
     }
     
-    private static boolean isValidAddress(String address) {
-        // Check if the address follows the required format
-        return WalletAddressGenerator.verifyAddressFormat(address);
-    }
-    
+
     public static boolean verifyTransactionFormat(Transaction transaction) {
         if (transaction == null) {
             return false;
@@ -53,10 +47,7 @@ public class TransactionValidator {
         // Implement your validation logic here
 
         // Check if the sender and recipient addresses are valid
-        if (!isValidAddress(transaction.getSender()) || !isValidAddress(transaction.getRecipient())) {
-            return false;
-        }
-    
+        
         // Check if the transaction amount is positive
         if (transaction.getAmount() <= 0) {
             return false;

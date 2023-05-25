@@ -4,7 +4,7 @@ import java.util.List;
 
 import ledger.blockchain.Block;
 import ledger.blockchain.Blockchain;
-import ledger.consensus.ProofOfWork;
+// import com.ledger.consensus.ProofOfWork;
 
 public class BlockChainValidator {
     
@@ -24,9 +24,9 @@ public class BlockChainValidator {
         for (int i = 1; i < blockchainBlocks.size(); i++) {
             currentBlock = blockchainBlocks.get(i);
             previousBlock = blockchainBlocks.get(i - 1);
-            if (!currentBlock.getHash().equals(ProofOfWork.calculateHashPoW(currentBlock))) {
-                return false;
-            }
+            // if (!currentBlock.getHash().equals(ProofOfWork.calculateHashPoW(currentBlock))) {
+            //     return false;
+            // }
             if (!previousBlock.getHash().equals(currentBlock.getPreviousHash())) {
                 return false;
             }

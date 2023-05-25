@@ -19,6 +19,7 @@ public class Blockchain {
     }
 
     public void addBlock(Block newBlock) {
+        newBlock.mineBlock(consensus, difficulty);
         blockchainBlocks.add(newBlock);
     }
 

@@ -63,6 +63,7 @@ public class Transaction {
         sb.append("     Sender: ").append(sender).append("\n");
         sb.append("     Recipient: ").append(recipient).append("\n");
         sb.append("     Amount: ").append(amount).append("\n");
+        sb.append("     Fee: ").append(fee).append("\n");
         sb.append("     Hash: ").append(hash).append("\n");
         sb.append("     Signature: ").append(signature).append("\n");
         return sb.toString();
